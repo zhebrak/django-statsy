@@ -1,0 +1,4 @@
+django==1.7.1
+django-celery==3.1.16
+django-debug-toolbar==1.2.2
+jsonfield==1.0.0

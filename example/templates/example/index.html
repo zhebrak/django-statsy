@@ -1,0 +1,13 @@
+{% block content %}
+
+    {% for post in post_list %}
+        <a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+        <br/>
+        <br/>
+        {{ post.content|safe }}
+        <br/><br/><br/><br/>
+    {% empty %}
+        Записей пока нет.
+    {% endfor %}
+
+{% endblock %}
