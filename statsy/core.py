@@ -20,22 +20,27 @@ class StatsyDisabledException(StatsyException):
 
 
 class Statsy(object):
+    _send_params = [
+        'group', 'event', 'label', 'user', 'related_object',
+        'value', 'url', 'duration', 'extra'
+    ]
+
     def __init__(self, async=True):
-        if settings.STATSY_CELERY and async:
+        if settings.STATSY_ASYNC and async:
             self.send = self._send_async
         else:
             self.send = self._send
 
         self.cache = StatsyCache()
 
-    def send(
-            self, user=None, group=None, event=None, related_object=None,
-            value=None, url=None, duration=None, extra=None
-    ):
-        """ Determining in __init__ """
+    def send(self, *args, **kwargs):
+        """
+        Determining in __init__
+        @params: self.get_send_params()
+        """
         raise NotImplemented
 
-    def watch(self, value=None, group=None, event=None):
+    def watch(self, group=None, event=None, value=None, label=None):
         watch_with_params = True
         if callable(value):
             watch_with_params = False
@@ -52,8 +57,8 @@ class Statsy(object):
 
                 if watch_with_params:
                     self.send(
-                        user=user, group=group, event=event, value=value,
-                        url=request.path, duration=duration
+                        group=group, event=event, label=label, user=user,
+                        value=value, url=request.path, duration=duration
                     )
                 else:
                     self.send(user=user, url=request.path, duration=duration)
@@ -116,6 +121,16 @@ class Statsy(object):
             'text_value': str(value)
         }
 
+    def _clean_user(self, user):
+        if isinstance(user, int):
+            return {
+                'user_id': user
+            }
+
+        return {
+            'user': user
+        }
+
     def _clean_user_async(self, user):
         return {
             'user_id': user.id
@@ -160,6 +175,9 @@ class Statsy(object):
             'related_object_id': related_object.id,
             'related_object_content_type_id': ContentType.objects.get_for_model(related_object.__class__)
         }
+
+    def get_send_params(self):
+        return self._send_params
 
     objects = StatsyObject.objects
     groups = StatsyGroup.objects

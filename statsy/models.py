@@ -53,16 +53,6 @@ class StatsyEvent(models.Model):
 
 
 class StatsyQuerySet(models.QuerySet):
-    def by_user(self, user):
-        if isinstance(user, get_user_model()):
-            return self.filter(user=user)
-
-        if isinstance(user, int):
-            return self.filter(user_id=user)
-
-        if isinstance(user, str):
-            return self.filter(user__username=user)
-
     def by_group(self, group):
         if isinstance(group, str):
             return self.filter(group__name=group)
@@ -80,6 +70,19 @@ class StatsyQuerySet(models.QuerySet):
             return self.filter(event_id=event)
 
         return self.filter(event=event)
+
+    def by_user(self, user):
+        if isinstance(user, get_user_model()):
+            return self.filter(user=user)
+
+        if isinstance(user, int):
+            return self.filter(user_id=user)
+
+        if isinstance(user, str):
+            return self.filter(user__username=user)
+
+    def by_label(self, label):
+        return self.filter(label=label)
 
     def by_time(self, start=None, end=None, include_start=True, include_end=True):
         filter_args = dict()
@@ -106,10 +109,6 @@ class StatsyQuerySet(models.QuerySet):
 
 
 class StatsyObject(models.Model):
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, blank=True, null=True,
-        related_name='statsy_object_list', verbose_name='user'
-    )
     group = models.ForeignKey(
         StatsyGroup, blank=True, null=True,
         related_name='statsy_object_list', verbose_name='group'
@@ -118,8 +117,12 @@ class StatsyObject(models.Model):
         StatsyEvent, blank=True, null=True,
         related_name='statsy_object_list', verbose_name='event'
     )
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, blank=True, null=True,
+        related_name='statsy_object_list', verbose_name='user'
+    )
 
-    label = models.CharField(max_length=255, verbose_name='label')
+    label = models.CharField(max_length=255, blank=True, null=True, verbose_name='label')
 
     related_object_content_type = models.ForeignKey(ContentType, blank=True, null=True)
     related_object_id = models.PositiveIntegerField(blank=True, null=True)
@@ -140,4 +143,4 @@ class StatsyObject(models.Model):
         verbose_name_plural = 'Statsy Objects'
 
     def __unicode__(self):
-        return '{0}:{1} {2}'.format(self.group, self.event, self.created_at.strftime('%d/%M/%Y %H:%m'))
+        return '{0}:{1} {2}'.format(self.group, self.event, self.created_at.strftime('%d/%m/%Y %H:%M'))

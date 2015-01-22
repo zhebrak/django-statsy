@@ -20,7 +20,7 @@ def get_post(request, post_id):
     post = get_object_or_404(Post.objects.all(), pk=post_id)
 
     statsy.send(
-        user=request.user, group='post', event='page_view',
+        group='post', event='page_view', user=request.user,
         url=request.path, related_object=post
     )
 
