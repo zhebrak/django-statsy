@@ -19,7 +19,6 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 
     # 'djcelery',
-    'debug_toolbar',
     'statsy',
     'example'
 )
@@ -57,3 +56,9 @@ TEMPLATE_LOADERS = (
 
 STATSY_CACHE_TIMEOUT = 60
 STATSY_CELERY = False
+
+
+try:
+    from local_settings import *
+except ImportError:
+    pass

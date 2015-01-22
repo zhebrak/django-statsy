@@ -1,13 +1,14 @@
 # coding: utf-8
 
+from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.db import models
 
 
 class Post(models.Model):
-    title = models.CharField(max_length=50)
-    content = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
+    title = models.CharField(max_length=50, verbose_name='title')
+    content = models.TextField(verbose_name='content')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='created at')
 
     class Meta:
         verbose_name = 'Post'

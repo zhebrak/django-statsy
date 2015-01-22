@@ -7,7 +7,7 @@ from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.core.cache import cache
 
-from statsy.models import StatsyObject, StatsyGroup, StatsyAction
+from statsy.models import StatsyObject, StatsyGroup, StatsyEvent
 from statsy.tasks import send as send_task
 
 
@@ -29,14 +29,13 @@ class Statsy(object):
         self.cache = StatsyCache()
 
     def send(
-            self, user=None, group=None, action=None, action_object=None,
+            self, user=None, group=None, event=None, related_object=None,
             value=None, url=None, duration=None, extra=None
     ):
         """ Determining in __init__ """
-
         raise NotImplemented
 
-    def watch(self, value=None, group=None, action=None):
+    def watch(self, value=None, group=None, event=None):
         watch_with_params = True
         if callable(value):
             watch_with_params = False
@@ -53,7 +52,7 @@ class Statsy(object):
 
                 if watch_with_params:
                     self.send(
-                        user=user, group=group, action=action, value=value,
+                        user=user, group=group, event=event, value=value,
                         url=request.path, duration=duration
                     )
                 else:
@@ -127,36 +126,44 @@ class Statsy(object):
             return {}
 
         cache_key = 'statsy_group_{0}'.format(group)
-        group = self.cache.setdefault(cache_key, lambda: StatsyGroup.objects.get_or_create(name=group)[0])
+        group = self.cache.setdefault(
+            cache_key,
+            lambda: StatsyGroup.objects.get_or_create(name=group)[0]
+        )
 
-        if group.is_enabled:
+        if group.is_active:
             return {
                 'group_id': group.id
             }
 
         raise StatsyDisabledException
 
-    def _clean_action(self, action):
-        if not action:
+    def _clean_event(self, event):
+        if not event:
             return {}
 
-        cache_key = 'statsy_action_{0}'.format(action)
-        action = self.cache.setdefault(cache_key, lambda: StatsyAction.objects.get_or_create(name=action)[0])
+        cache_key = 'statsy_event_{0}'.format(event)
+        event = self.cache.setdefault(
+            cache_key,
+            lambda: StatsyEvent.objects.get_or_create(name=event)[0]
+        )
 
-        if action.is_enabled:
+        if event.is_active:
             return {
-                'action_id': action.id
+                'event_id': event.id
             }
 
         raise StatsyDisabledException
 
-    def _clean_action_object_async(self, action_object):
+    def _clean_related_object_async(self, related_object):
         return {
-            'action_object_id': action_object.id,
-            'action_object_content_type_id': ContentType.objects.get_for_model(action_object.__class__)
+            'related_object_id': related_object.id,
+            'related_object_content_type_id': ContentType.objects.get_for_model(related_object.__class__)
         }
 
     objects = StatsyObject.objects
+    groups = StatsyGroup.objects
+    events = StatsyEvent.objects
 
 
 class StatsyCache(object):

@@ -8,7 +8,7 @@ from example.models import Post
 from statsy import statsy
 
 
-@statsy.watch(group='index', action='page_view')
+@statsy.watch(group='index', event='page_view')
 def index(request):
     post_list = Post.objects.all()
 
@@ -20,8 +20,8 @@ def get_post(request, post_id):
     post = get_object_or_404(Post.objects.all(), pk=post_id)
 
     statsy.send(
-        user=request.user, group='post', action='page_view',
-        url=request.path, action_object=post
+        user=request.user, group='post', event='page_view',
+        url=request.path, related_object=post
     )
 
     return render_to_response('example/post.html', {'post': post})

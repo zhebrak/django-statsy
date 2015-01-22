@@ -11,9 +11,24 @@ from django.db import models
 from jsonfield import JSONField
 
 
+class StatsyBaseQuerySet(models.QuerySet):
+    def active(self):
+        return self.filter(is_active=True)
+
+
+class StatsyGroupQuerySet(StatsyBaseQuerySet):
+    pass
+
+
+class StatsyEventQuerySet(StatsyBaseQuerySet):
+    pass
+
+
 class StatsyGroup(models.Model):
-    name = models.CharField(max_length=30, verbose_name='group name')
-    enabled = models.BooleanField(default=1)
+    name = models.CharField(max_length=30, verbose_name='name')
+    is_active = models.BooleanField(default=True, verbose_name='is active')
+
+    objects = StatsyGroupQuerySet.as_manager()
 
     class Meta:
         verbose_name = 'Statsy Group'
@@ -22,25 +37,19 @@ class StatsyGroup(models.Model):
     def __unicode__(self):
         return self.name
 
-    @property
-    def is_enabled(self):
-        return self.enabled
 
+class StatsyEvent(models.Model):
+    name = models.CharField(max_length=30, verbose_name='name')
+    is_active = models.BooleanField(default=True, verbose_name='is active')
 
-class StatsyAction(models.Model):
-    name = models.CharField(max_length=30, verbose_name='action name')
-    enabled = models.BooleanField(default=1)
+    objects = StatsyEventQuerySet.as_manager()
 
     class Meta:
-        verbose_name = 'Statsy Action'
-        verbose_name_plural = 'Statsy Actions'
+        verbose_name = 'Statsy Event'
+        verbose_name_plural = 'Statsy Events'
 
     def __unicode__(self):
         return self.name
-
-    @property
-    def is_enabled(self):
-        return self.enabled
 
 
 class StatsyQuerySet(models.QuerySet):
@@ -63,14 +72,14 @@ class StatsyQuerySet(models.QuerySet):
 
         return self.filter(group=group)
 
-    def by_action(self, action):
-        if isinstance(action, str):
-            return self.filter(action__name=action)
+    def by_event(self, event):
+        if isinstance(event, str):
+            return self.filter(event__name=event)
 
-        if isinstance(action, int):
-            return self.filter(action_id=action)
+        if isinstance(event, int):
+            return self.filter(event_id=event)
 
-        return self.filter(action=action)
+        return self.filter(event=event)
 
     def by_time(self, start=None, end=None, include_start=True, include_end=True):
         filter_args = dict()
@@ -87,31 +96,48 @@ class StatsyQuerySet(models.QuerySet):
         return self.filter(**filter_args) if filter_args else self
 
     def today(self):
-        return self.by_time(start=datetime.today())
+        now = datetime.now()
+        start_of_today = datetime(
+            year=now.year, month=now.month, day=now.day,
+            hour=0, minute=0, second=0, microsecond=0
+        )
+
+        return self.by_time(start=start_of_today)
 
 
 class StatsyObject(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, related_name='statsy_object_list')
-    group = models.ForeignKey(StatsyGroup, blank=True, null=True, related_name='statsy_object_list')
-    action = models.ForeignKey(StatsyAction, blank=True, null=True, related_name='statsy_object_list')
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, blank=True, null=True,
+        related_name='statsy_object_list', verbose_name='user'
+    )
+    group = models.ForeignKey(
+        StatsyGroup, blank=True, null=True,
+        related_name='statsy_object_list', verbose_name='group'
+    )
+    event = models.ForeignKey(
+        StatsyEvent, blank=True, null=True,
+        related_name='statsy_object_list', verbose_name='event'
+    )
 
-    action_object_content_type = models.ForeignKey(ContentType, blank=True, null=True)
-    action_object_id = models.PositiveIntegerField(blank=True, null=True)
-    action_object = GenericForeignKey('action_object_content_type', 'action_object_id')
+    label = models.CharField(max_length=255, verbose_name='label')
 
-    created_at = models.DateTimeField(auto_now_add=True)
-    value = models.IntegerField(blank=True, null=True)
-    text_value = models.CharField(max_length=255, blank=True, null=True)
+    related_object_content_type = models.ForeignKey(ContentType, blank=True, null=True)
+    related_object_id = models.PositiveIntegerField(blank=True, null=True)
+    related_object = GenericForeignKey('related_object_content_type', 'related_object_id')
 
-    url = models.URLField(blank=True, null=True)
-    duration = models.IntegerField(blank=True, null=True)
-    extra = JSONField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='created at')
+    value = models.IntegerField(blank=True, null=True, verbose_name='value')
+    text_value = models.CharField(max_length=255, blank=True, null=True, verbose_name='text value')
 
-    objects = models.Manager.from_queryset(StatsyQuerySet)()
+    url = models.URLField(blank=True, null=True, verbose_name='url')
+    duration = models.IntegerField(blank=True, null=True, verbose_name='duration')
+    extra = JSONField(blank=True, null=True, verbose_name='extra')
+
+    objects = StatsyQuerySet.as_manager()
 
     class Meta:
         verbose_name = 'Statsy Object'
         verbose_name_plural = 'Statsy Objects'
 
     def __unicode__(self):
-        return '{0}:{1} {2}'.format(self.group, self.action, self.created_at.strftime('%d/%M/%Y %H:%m'))
+        return '{0}:{1} {2}'.format(self.group, self.event, self.created_at.strftime('%d/%M/%Y %H:%m'))
