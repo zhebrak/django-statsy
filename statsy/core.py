@@ -85,7 +85,7 @@ class Statsy(object):
 
     def _clean_kwargs(self, kwargs, clean_template=None):
         cleaned_kwargs = kwargs.copy()
-        for kwarg in kwargs.iterkeys():
+        for kwarg in kwargs.keys():
             if clean_template:
                 clean_kwarg_func = clean_template.format(kwarg) if clean_template else ''
             else:
