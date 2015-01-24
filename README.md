@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/fata1ex/django-statsy.png?label=ready&title=Ready)](https://waffle.io/fata1ex/django-statsy)
 Django Statsy
 ========
 
