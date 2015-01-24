@@ -1,6 +1,6 @@
 # coding: utf-8
 
-from core import Statsy
+from statsy.core import Statsy
 
 
 statsy = Statsy()

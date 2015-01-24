@@ -10,5 +10,5 @@ app = Celery('tasks', broker='amqp://guest@localhost//')
 
 @app.task
 def send(self, **kwargs):
-    statsy_object = StatsyObject(**kwargs)
+    statsy_object = StatsyObject.create(**kwargs)
     statsy_object.save()
