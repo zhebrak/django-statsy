@@ -16,16 +16,16 @@ def string_is_floatable(string_object):
         return True
 
 
-def memoize(f):
-    class Memodict(dict):
+def memoize(function):
+    class MemoDict(dict):
         def __getitem__(self, *key):
             return dict.__getitem__(self, key)
 
         def __missing__(self, key):
-            ret = self[key] = f(*key)
-            return ret
+            result = self[key] = function(*key)
+            return result
 
-    return Memodict().__getitem__
+    return MemoDict().__getitem__
 
 
 @memoize
