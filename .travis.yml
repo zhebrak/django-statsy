@@ -4,5 +4,9 @@ python:
   - "3.2"
   - "3.3"
   - "3.4"
-install: pip install -r requirements.txt --use-mirrors
+install:
+  - pip install -r requirements.txt --use-mirrors
+  - pip install coveralls
 script:  python manage.py test
+after_success:
+  coveralls
