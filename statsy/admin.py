@@ -18,14 +18,14 @@ class StatsyEventAdmin(admin.ModelAdmin):
 
 
 class StatsyObjectAdmin(admin.ModelAdmin):
-    list_display = (
-        '__unicode__', 'label', 'user', 'value',
-        'text_value', 'duration', 'url'
-    )
-    search_fields = ('user__username', 'value', 'text_value', 'url')
+    list_display = ('__unicode__', 'label', 'user', 'object_value', 'duration', 'url')
+    search_fields = ('user__username', 'value', 'url')
     list_filter = ('group__name', 'event__name', 'label', 'user', 'url')
     date_hierarchy = 'created_at'
     list_select_related = ('group', 'event', 'user')
+
+    def object_value(self, obj):
+        return obj.value
 
 
 admin.site.register(StatsyGroup, StatsyGroupAdmin)

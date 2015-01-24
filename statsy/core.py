@@ -3,20 +3,15 @@
 import time
 from functools import wraps, partial
 
-from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
-from django.core.cache import cache
 
+from statsy.cache import StatsyCache
+from statsy.exceptions import StatsyException, StatsyDisabledException
 from statsy.models import StatsyObject, StatsyGroup, StatsyEvent
 from statsy.tasks import send as send_task
 
-
-class StatsyException(Exception):
-    pass
-
-
-class StatsyDisabledException(StatsyException):
-    pass
+from statsy.settings import ASYNC
+from statsy.helpers import get_correct_value_field
 
 
 class Statsy(object):
@@ -26,7 +21,7 @@ class Statsy(object):
     ]
 
     def __init__(self, async=True):
-        if settings.STATSY_ASYNC and async:
+        if ASYNC and async:
             self.send = self._send_async
         else:
             self.send = self._send
@@ -74,8 +69,7 @@ class Statsy(object):
 
     def _send(self, **kwargs):
         try:
-            statsy_object = StatsyObject(**self._clean_kwargs(kwargs))
-            statsy_object.save()
+            StatsyObject.create(**self._clean_kwargs(kwargs))
         except StatsyDisabledException:
             pass
 
@@ -112,13 +106,8 @@ class Statsy(object):
                 'value': None
             }
 
-        if isinstance(value, int) or (isinstance(value, str) and value.isdigit()):
-            return {
-                'value': int(value)
-            }
-
         return {
-            'text_value': str(value)
+            'value': get_correct_value_field(value)[1]
         }
 
     def _clean_user(self, user):
@@ -182,24 +171,3 @@ class Statsy(object):
     objects = StatsyObject.objects
     groups = StatsyGroup.objects
     events = StatsyEvent.objects
-
-
-class StatsyCache(object):
-    @staticmethod
-    def get(key):
-        return cache.get(key)
-
-    @staticmethod
-    def set(key, value, timeout=settings.STATSY_CACHE_TIMEOUT):
-        return cache.set(key, value, timeout)
-
-    def setdefault(self, key, default, timeout=settings.STATSY_CACHE_TIMEOUT):
-        value = self.get(key)
-        if not value:
-            if callable(default):
-                default = default()
-
-            self.set(key, default, timeout)
-            value = default
-
-        return value

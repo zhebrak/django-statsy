@@ -8,7 +8,7 @@ from example.models import Post
 from statsy import statsy
 
 
-@statsy.watch(group='index', event='page_view')
+@statsy.watch(group='index', event='page_view', value='123.1')
 def index(request):
     post_list = Post.objects.all()
 
