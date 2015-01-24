@@ -1,6 +1,6 @@
 # coding: utf-8
 
-from helpers import get_correct_value_field
+from statsy.helpers import get_correct_value_field
 
 
 class ValueDescriptor(object):
