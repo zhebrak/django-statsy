@@ -1,0 +1,12 @@
+.statsy__chart {
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+#dahboardGroupContainer {
+    min-width: 310px; height: 400px; margin: 0 auto;
+}
+
+#dahboardEventContainer {
+    min-width: 310px; height: 400px; margin: 0 auto;
+}

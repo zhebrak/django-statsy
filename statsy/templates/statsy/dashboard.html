@@ -1,10 +1,23 @@
-<!DOCTYPE html>
-<html>
-<head lang="en">
-    <meta charset="UTF-8">
-    <title></title>
-</head>
-<body>
+{% extends 'statsy/base.html' %}
 
-</body>
-</html>
+{% load static from staticfiles %}
+
+{% block script %}
+    <script src="{% static 'statsy/app/js/dashboard.js' %}"></script>
+{% endblock %}
+
+{% block title %}
+    Statsy | Dashboard
+{% endblock %}
+
+{% block content %}
+    <h1>Overview</h1>
+    <div class="row">
+        <div class="statsy__chart">
+            <div id="dashboardGroupContainer" data-url="{% url 'statsy.today_group_stats' %}"></div>
+        </div>
+        <div class="statsy__chart">
+            <div id="dashboardEventContainer" data-url="{% url 'statsy.today_event_stats' %}"></div>
+        </div>
+    </div>
+{% endblock %}

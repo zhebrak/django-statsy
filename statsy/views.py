@@ -1,7 +1,9 @@
 # coding: utf-8
 
+import json
+
 from django.db.models import Count
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponse
 from django.shortcuts import render_to_response
 
 from statsy import statsy
@@ -21,17 +23,22 @@ def dashboard(request):
     result = {
         'groups': statsy.groups.all(),
         'events': statsy.events.all(),
-
-        'today_group_stats': get_aggregated_today_stats('group'),
-        'today_event_stats': get_aggregated_today_stats('event')
     }
 
     return render_to_response('statsy/dashboard.html', result)
 
 
-def get_aggregated_today_stats(category):
-    day_stats_aggregate_by = 10
+def get_today_group_stats(request):
+    stats = get_aggregated_today_stats('group')
+    return HttpResponse(json.dumps(stats), content_type='application/json')
 
+
+def get_today_event_stats(request):
+    stats = get_aggregated_today_stats('event')
+    return HttpResponse(json.dumps(stats), content_type='application/json')
+
+
+def get_aggregated_today_stats(category, aggregation_time=10):
     today_stats = statsy.objects.today().select_related(category)\
         .extra({"time": "strftime('%H:%M', created_at)"})\
         .values(category + '__name', 'time').annotate(count=Count(category + '_id'))
@@ -42,11 +49,14 @@ def get_aggregated_today_stats(category):
         if name not in aggregated_stats:
             aggregated_stats[name] = dict()
 
-        aggregated_time = get_aggregated_time(data['time'], day_stats_aggregate_by)
+        aggregated_time = get_aggregated_time(data['time'], aggregation_time)
         if aggregated_time not in aggregated_stats[name]:
             aggregated_stats[name][aggregated_time] = 0
 
         aggregated_stats[name][aggregated_time] += data['count']
+
+    for category, data in aggregated_stats.items():
+        aggregated_stats[category] = sorted(data.items())
 
     return aggregated_stats
 
@@ -59,18 +69,18 @@ def get_aggregated_time(time_string, aggregate_by):
     return ':'.join([hours, aggregated_minutes])
 
 
-def user(request):
-    pass
-
-
 def group(request):
-    pass
+    return render_to_response('statsy/dashboard.html', {})
 
 
 def event(request):
-    pass
+    return render_to_response('statsy/dashboard.html', {})
+
+
+def user(request):
+    return render_to_response('statsy/dashboard.html', {})
 
 
 def tracking(request):
-    pass
+    return render_to_response('statsy/dashboard.html', {})
 

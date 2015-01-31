@@ -1,10 +1,19 @@
+{% load static from staticfiles %}
+
 <!DOCTYPE html>
-<html>
-<head lang="en">
-    <meta charset="UTF-8">
-    <title></title>
-</head>
-<body>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}{% endblock %}</title>
+
+    <link href="{% static 'statsy/libs/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <script src="{% static 'statsy/libs/jquery/js/jquery-1.11.2.min.js' %}"></script>
+    <script src="{% static 'statsy/libs/bootstrap/js/bootstrap.min.js' %}"></script>
+  </head>
+  <body>
+    <h1>Hello, world!</h1>
     {% block content %}{% endblock %}
-</body>
+  </body>
 </html>

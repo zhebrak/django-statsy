@@ -54,10 +54,6 @@ TEMPLATE_LOADERS = (
     'django.template.loaders.app_directories.Loader',
 )
 
-STATSY_CACHE_TIMEOUT = 60
-STATSY_ASYNC = False
-
-
 try:
     from local_settings import *
 except ImportError:

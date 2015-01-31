@@ -1,6 +1,6 @@
 # coding: utf-8
 
-from django.core.cache import cache
+from django.core.cache import cache as django_cache
 
 from statsy.settings import CACHE_TIMEOUT
 
@@ -8,11 +8,11 @@ from statsy.settings import CACHE_TIMEOUT
 class StatsyCache(object):
     @staticmethod
     def get(key):
-        return cache.get(key)
+        return django_cache.get(key)
 
     @staticmethod
     def set(key, value, timeout=CACHE_TIMEOUT):
-        return cache.set(key, value, timeout)
+        return django_cache.set(key, value, timeout)
 
     def setdefault(self, key, default, timeout=CACHE_TIMEOUT):
         value = self.get(key)
@@ -24,3 +24,6 @@ class StatsyCache(object):
             value = default
 
         return value
+
+
+cache = StatsyCache()

@@ -11,7 +11,7 @@ urlpatterns = patterns(
     url(r'^$', 'index', name='index'),
     url(r'^post/(?P<post_id>\d+)/$', 'get_post', name='get_post'),
 
-    url(r'^stats/', include('statsy.urls', namespace='statsy')),
+    url(r'^stats/', include('statsy.urls')),
 
     url(r'^admin/', include(admin.site.urls)),
 )

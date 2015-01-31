@@ -5,7 +5,7 @@ from functools import wraps, partial
 
 from django.contrib.contenttypes.models import ContentType
 
-from statsy.cache import StatsyCache
+from statsy.cache import cache
 from statsy.exceptions import StatsyException, StatsyDisabledException
 from statsy.models import StatsyObject, StatsyGroup, StatsyEvent
 from statsy.tasks import send as send_task
@@ -25,8 +25,6 @@ class Statsy(object):
             self.send = self._send_async
         else:
             self.send = self._send
-
-        self.cache = StatsyCache()
 
     def send(self, *args, **kwargs):
         """
@@ -93,7 +91,7 @@ class Statsy(object):
 
             if hasattr(self, clean_kwarg_func):
                     cleaned_kwargs.update(
-                        getattr(self, clean_kwarg_func)(cleaned_kwargs.pop(kwarg) or {})
+                        getattr(self, clean_kwarg_func)(cleaned_kwargs.pop(kwarg) or None)
                     )
 
         return cleaned_kwargs
@@ -130,7 +128,7 @@ class Statsy(object):
             return {}
 
         cache_key = 'statsy_group_{0}'.format(group)
-        group = self.cache.setdefault(
+        group = cache.setdefault(
             cache_key,
             lambda: StatsyGroup.objects.get_or_create(name=group)[0]
         )
@@ -147,7 +145,7 @@ class Statsy(object):
             return {}
 
         cache_key = 'statsy_event_{0}'.format(event)
-        event = self.cache.setdefault(
+        event = cache.setdefault(
             cache_key,
             lambda: StatsyEvent.objects.get_or_create(name=event)[0]
         )
