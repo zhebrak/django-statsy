@@ -3,7 +3,7 @@
 import json
 
 from django.db.models import Count
-from django.http import HttpResponse, HttpResponse
+from django.http import HttpResponse
 from django.shortcuts import render_to_response
 
 from statsy import statsy

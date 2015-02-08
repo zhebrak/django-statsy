@@ -66,6 +66,7 @@ class StatsyQuerySet(models.QuerySet):
         return self.filter(**filter_args) if filter_args else self
 
     def today(self):
+        # use d.replace
         now = datetime.now()
         start_of_today = datetime(
             year=now.year, month=now.month, day=now.day,

@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 
 from example.models import Post
 
-from statsy import statsy
+import statsy
 
 
 @statsy.watch(group='index', event='page_view', value='123.1')

@@ -2,7 +2,7 @@
 
 import unittest
 
-from statsy import statsy
+import statsy
 
 
 class CoreTest(unittest.TestCase):
@@ -23,4 +23,3 @@ class CoreTest(unittest.TestCase):
         self.assertEqual(self.event_name, statsy_object.event.name)
         self.assertEqual(self.label, statsy_object.label)
         self.assertEqual(self.value, statsy_object.value)
-
