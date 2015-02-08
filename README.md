@@ -58,7 +58,7 @@ Statsy.send({
 pip install django-statsy
 ```
 
-```
+```python
 # settings.py
 
 INSTALLED_APPS = (
