@@ -64,6 +64,12 @@ Statsy.send({
 });
 ```
 
+```javascript
+{% load static from staticfiles %}
+
+<script src="{% static 'statsy/api.js' %}"></script>
+```
+
 ### Installation
 
 ```
