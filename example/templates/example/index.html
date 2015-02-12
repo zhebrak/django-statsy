@@ -1,5 +1,7 @@
 {% extends 'example/base.html' %}
 
+{% load statsy %}
+
 {% block content %}
 
     {% for post in post_list %}
@@ -9,7 +11,9 @@
         {{ post.content|safe }}
         <br/><br/><br/><br/>
     {% empty %}
-        Записей пока нет.
+        No posts.
     {% endfor %}
+
+    {% statsy %}
 
 {% endblock %}

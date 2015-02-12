@@ -2,10 +2,13 @@
 
 from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.views.generic import TemplateView
 
 from example.models import Post
 
 import statsy
+
+from statsy.mixins import WatchMixin
 
 
 @statsy.watch(group='index', event='page_view', value='123.1')
@@ -25,3 +28,10 @@ def get_post(request, post_id):
     )
 
     return render_to_response('example/post.html', {'post': post})
+
+
+class AboutView(WatchMixin, TemplateView):
+    template_name = 'example/about.html'
+
+    watch_group = 'info'
+    watch_event = 'page_view'

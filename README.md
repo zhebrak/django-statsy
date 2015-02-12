@@ -11,7 +11,7 @@ Statsy is an application for collecting and displaying statistics in your Django
 
 ### Basic Usage
 
-As view decorator:
+View decorator:
 
 ```python
 @statsy.watch
@@ -39,9 +39,21 @@ def like(request):
   ...
 ```
 
+CBV Mixin:
+
+```python
+class AboutView(WatchMixin, TemplateView):
+    template_name = 'example/about.html'
+
+    watch_group = 'info'
+    watch_event = 'page_view'
+```
+
 From the template:
 
 ```javascript
+{% load statsy %}
+
 {% statsy %}
 
 ...
@@ -80,7 +92,7 @@ If you want to display collected statistics you will also have to add Statsy's U
 
 ### Collect Options
 
-All is optional.
+All are optional.
 ```python
 # categorizing options
 'group'
@@ -113,6 +125,7 @@ All is optional.
 
 ### Roadmap
 - Enhanced statistics view
+- Aggregation over time
 - User tracking
 - Realtime statistics
 

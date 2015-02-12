@@ -16,8 +16,27 @@
         <div class="statsy__chart">
             <div id="dashboardGroupContainer" data-url="{% url 'statsy.today_group_stats' %}"></div>
         </div>
+
+        <div class="statsy__group_list">
+        Groups:
+        {% for group in groups %}
+            <div class="statsy__group">
+                <a href="{% url 'statsy.group' group.name %}">{{ group }}</a>
+            </div>
+        {% endfor %}
+        </div>
+
         <div class="statsy__chart">
             <div id="dashboardEventContainer" data-url="{% url 'statsy.today_event_stats' %}"></div>
+        </div>
+
+        <div class="statsy__event_list">
+        Events:
+        {% for event in events %}
+            <div class="statsy__event">
+                <a href="{% url 'statsy.event' event.name %}">{{ event }}</a>
+            </div>
+        {% endfor %}
         </div>
     </div>
 {% endblock %}

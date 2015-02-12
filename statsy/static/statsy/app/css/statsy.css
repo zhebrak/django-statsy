@@ -3,10 +3,25 @@
     margin-bottom: 30px;
 }
 
+.statsy__group_list, .statsy__event_list {
+    margin: 10px 0 20px 0;
+    line-height: 50px;
+}
+
+.statsy__group, .statsy__event {
+    display: inline;
+    margin-left: 10px;
+}
+
 #dahboardGroupContainer {
     min-width: 310px; height: 400px; margin: 0 auto;
 }
 
 #dahboardEventContainer {
     min-width: 310px; height: 400px; margin: 0 auto;
+}
+
+.footer {
+    margin: 20px 0 10px 0;
+    text-align: center;
 }

@@ -7,8 +7,14 @@ urlpatterns = patterns('statsy.views',
     url(r'^send/$', 'send', name='statsy.send'),
 
     url(r'^$', 'dashboard', name='statsy.dashboard'),
-    url(r'^group/$', 'group', name='statsy.group'),
-    url(r'^event/$', 'event', name='statsy.event'),
+
+    url(r'^group/$', 'group_list', name='statsy.group_list'),
+    url(r'^group/(?P<group_name>.+)/$', 'group', name='statsy.group'),
+
+    url(r'^event/$', 'event_list', name='statsy.event_list'),
+    url(r'^event/(?P<event_name>.+)/$', 'event', name='statsy.event'),
+
+
     url(r'^user/$', 'user', name='statsy.user'),
     url(r'^tracking/$', 'tracking', name='statsy.tracking'),
 
