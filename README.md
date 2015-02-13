@@ -51,23 +51,27 @@ class AboutView(WatchMixin, TemplateView):
 
 From the template:
 
-```javascript
+```html
 {% load statsy %}
 
 {% statsy %}
+```
 
-...
+or
 
+```html
+{% load static from staticfiles %}
+
+<script src="{% static 'statsy/api.js' %}"></script>
+```
+
+then
+
+```javascript
 Statsy.send({
   'group': 'post',
   'event': 'subscription'
 });
-```
-
-```javascript
-{% load static from staticfiles %}
-
-<script src="{% static 'statsy/api.js' %}"></script>
 ```
 
 ### Installation

@@ -10,7 +10,11 @@ import statsy
 
 
 def send(request):
-    kwargs = {arg: request.POST.get(arg) for arg in statsy.get_send_params()}
+    kwargs = {
+        arg: request.POST.get(arg)
+        for arg in statsy.get_send_params()
+    }
+
     statsy.send(**kwargs)
 
     return HttpResponse()
@@ -38,7 +42,7 @@ def get_today_event_stats(request):
     return HttpResponse(json.dumps(stats), content_type='application/json')
 
 
-def get_aggregated_today_stats(category, aggregation_time=10):
+def get_aggregated_today_stats(category, aggregation_time=15):
     today_stats = statsy.objects.today().select_related(category)\
         .extra({"time": "strftime('%H:%M', created_at)"})\
         .values(category + '__name', 'time').annotate(count=Count(category + '_id'))
@@ -55,7 +59,15 @@ def get_aggregated_today_stats(category, aggregation_time=10):
 
         aggregated_stats[name][aggregated_time] += data['count']
 
+    aggregated_periods = [
+        get_aggregated_time('{0}:{1}'.format(hour, minute), aggregation_time)
+        for hour in range(0, 24) for minute in range(0, 59, aggregation_time)
+    ]
     for category, data in aggregated_stats.items():
+        for period in aggregated_periods:
+            if period not in data:
+                data[period] = 0
+
         aggregated_stats[category] = sorted(data.items())
 
     return aggregated_stats
@@ -63,10 +75,12 @@ def get_aggregated_today_stats(category, aggregation_time=10):
 
 def get_aggregated_time(time_string, aggregate_by):
     hours, minutes = time_string.split(':')
+
     aggregated_minutes = str(int(minutes) - (int(minutes) % aggregate_by))
     aggregated_minutes = (aggregated_minutes + '0')[:2]  # hour:00 fix
+    hours = ('0' + hours)[-2:]
 
-    return ':'.join([hours, aggregated_minutes])
+    return u':'.join([hours, aggregated_minutes])
 
 
 def group_list(request):
