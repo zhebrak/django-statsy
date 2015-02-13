@@ -2,13 +2,13 @@
 
 from distutils.core import setup
 
-import statsy
+__version__ = '0.1dev'
 
 
 setup(
     name='django-statsy',
     packages=['statsy'],
-    version=statsy.__version__,
+    version=__version__,
     description='Statistics for Django projects',
     author='Alexander Zhebrak',
     author_email='fata2ex@gmail.com',
