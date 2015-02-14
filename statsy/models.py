@@ -85,7 +85,7 @@ class StatsyObject(models.Model):
     def create(cls, **kwargs):
         value = kwargs.pop('value', None)
 
-        new_object = cls(**kwargs)
+        new_object = cls.objects.create(**kwargs)
         new_object.value = value
         new_object.save()
 

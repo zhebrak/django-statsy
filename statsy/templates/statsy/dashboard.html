@@ -21,7 +21,8 @@
         Groups:
         {% for group in groups %}
             <div class="statsy__group">
-                <a href="{% url 'statsy.group' group.name %}">{{ group }}</a>
+{#                <a href="{% url 'statsy.group' group.name %}">{{ group }}</a>#}
+                <a href="#">{{ group }}</a>
             </div>
         {% endfor %}
         </div>
@@ -34,7 +35,8 @@
         Events:
         {% for event in events %}
             <div class="statsy__event">
-                <a href="{% url 'statsy.event' event.name %}">{{ event }}</a>
+{#                <a href="{% url 'statsy.event' event.name %}">{{ event }}</a>#}
+                <a href="#">{{ event }}</a>
             </div>
         {% endfor %}
         </div>

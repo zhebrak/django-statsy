@@ -1,8 +1,13 @@
+{% extends 'example/base.html' %}
+
 {% block content %}
 
         {{ post.title }}
         <br/>
         <br/>
         {{ post.content|safe }}
+        <br/>
+        <br/>
+        <a class="like-button" href="#" data-id="{{ post.id }}" data-content_type-id="{{ content_type.id }}">like</a>
 
 {% endblock %}
