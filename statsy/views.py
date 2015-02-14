@@ -19,12 +19,7 @@ def send(request):
         if arg in send_params
     }
 
-    try:
-
-        statsy.send(**kwargs)
-
-    except Exception as e:
-        print e
+    statsy.send(**kwargs)
     result = {
         'response': 'OK'
     }
