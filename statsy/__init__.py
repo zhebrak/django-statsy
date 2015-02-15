@@ -27,5 +27,9 @@ def autodiscover():
     autodiscover_modules('stats', register_to=site)
 
 
+def init_signals():
+    import signals
+
+
 default_app_config = 'statsy.apps.StatsyConfig'
 

@@ -8,3 +8,4 @@ class StatsyConfig(AppConfig):
 
     def ready(self):
         self.module.autodiscover()
+        self.module.init_signals()

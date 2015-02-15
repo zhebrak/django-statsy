@@ -15,6 +15,7 @@ urlpatterns = patterns(
     url(r'^about/$', views.AboutView.as_view(), name='about'),
 
     url(r'^stats/', include('statsy.urls')),
+    url(r'^tests/', include('tests.urls')),
 
     url(r'^admin/', include(admin.site.urls)),
 )

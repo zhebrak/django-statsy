@@ -1,25 +1,23 @@
 # coding: utf-8
 
-import unittest
+from django.test import TestCase
 
 import statsy
 
+from tests.settings import test_group, test_event, test_label, test_value_list
 
-class CoreTest(unittest.TestCase):
-    def setUp(self):
-        self.statsy = statsy
 
-        self.group_name = 'test_group'
-        self.event_name = 'test_event'
-        self.label = 'test_label'
-        self.value = 'test_value'
-
+class CoreTest(TestCase):
     def test_send_basic(self):
-        self.statsy.send(group=self.group_name, event=self.event_name, label=self.label, value=self.value)
+        for test_value in test_value_list:
+            statsy.send(
+                group=test_group, event=test_event,
+                label=test_label, value=test_value
+            )
 
-        statsy_object = self.statsy.objects.select_related('group', 'event').last()
+            statsy_object = statsy.objects.select_related('group', 'event').last()
 
-        self.assertEqual(self.group_name, statsy_object.group.name)
-        self.assertEqual(self.event_name, statsy_object.event.name)
-        self.assertEqual(self.label, statsy_object.label)
-        self.assertEqual(self.value, statsy_object.value)
+            self.assertEqual(test_group, statsy_object.group.name)
+            self.assertEqual(test_event, statsy_object.event.name)
+            self.assertEqual(test_label, statsy_object.label)
+            self.assertEqual(test_value, statsy_object.value)

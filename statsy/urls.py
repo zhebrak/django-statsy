@@ -4,5 +4,3 @@ import statsy
 
 
 urlpatterns = statsy.site.get_urls()
-
-

@@ -1,6 +1,8 @@
 # coding: utf-8
 
 from functools import update_wrapper
+
+from django.contrib.auth.decorators import permission_required
 from django.http import Http404
 from django.views.decorators.csrf import csrf_protect
 
@@ -19,11 +21,11 @@ class StatsySite(object):
         self._url_map = {}
         self._category_map = {}
 
-    def register(self, view, category=default_category):
+    def register(self, view, name=None, category=default_category, permission=None):
         if view in self._registry:
             raise AlreadyRegistered('The view %s is already registered' % view.__name__)
 
-        self._registry[view.__name__] = view
+        self._registry[view.__name__] = (view, name, permission)
 
         if category not in self._category_map:
             self._category_map[category] = []
@@ -52,29 +54,41 @@ class StatsySite(object):
         urlpatterns = patterns('',
             url(r'^send/$', api.send, name='statsy.send'),
 
-            url(r'^$', views.dashboard, name='statsy.dashboard'),
+            url(r'^$', self.stats_view(views.dashboard), name='statsy.dashboard'),
 
-            url(r'^group/$', views.group_list, name='statsy.group_list'),
-            url(r'^group/(?P<group_name>.+)/$', views.group, name='statsy.group'),
+            url(r'^group/$', self.stats_view(views.group_list), name='statsy.group_list'),
+            url(r'^group/(?P<group_name>.+)/$', self.stats_view(views.group), name='statsy.group'),
 
-            url(r'^event/$', views.event_list, name='statsy.event_list'),
-            url(r'^event/(?P<event_name>.+)/$', views.event, name='statsy.event'),
+            url(r'^event/$', self.stats_view(views.event_list), name='statsy.event_list'),
+            url(r'^event/(?P<event_name>.+)/$', self.stats_view(views.event), name='statsy.event'),
 
-            url(r'^user/$', views.user, name='statsy.user'),
-            url(r'^tracking/$', views.tracking, name='statsy.tracking'),
-            url(r'^custom/$', views.custom, name='statsy.custom'),
+            url(r'^user/$', self.stats_view(views.user), name='statsy.user'),
+            url(r'^tracking/$', self.stats_view(views.tracking), name='statsy.tracking'),
+            url(r'^custom/$', self.stats_view(views.custom), name='statsy.custom'),
 
-            url(r'^today_group_stats/$', views.get_today_group_stats, name='statsy.today_group_stats'),
-            url(r'^today_event_stats/$', views.get_today_event_stats, name='statsy.today_event_stats'),
+            url(
+                r'^today_group_stats/$',
+                self.stats_view(views.get_today_group_stats),
+                name='statsy.today_group_stats'
+            ),
+            url(
+                r'^today_event_stats/$',
+                self.stats_view(views.get_today_event_stats),
+                name='statsy.today_event_stats'
+            ),
         )
 
         url_map = dict()
-        for view_name, view in self._registry.items():
+        for view_name, (view, _, permission) in self._registry.items():
             url_part = self._get_url_part(view_name)
             url_name = 'statsy.{0}'.format(view_name, url_part)
 
+            stats_view = self.stats_view(view)
+            if permission:
+                stats_view = permission_required(permission)(stats_view)
+
             urlpatterns += patterns('',
-                url(r'^custom/{0}/'.format(url_part), self.stats_view(view), name=url_name)
+                url(r'^custom/{0}/'.format(url_part), stats_view, name=url_name)
             )
 
             url_map[view_name] = url_name
@@ -85,19 +99,21 @@ class StatsySite(object):
 
     def _build_url_map(self, url_map):
         for category, view_list in self._category_map.items():
+            category = category if category != self.default_category else ''
+            self._url_map[category] = dict()
+
             for view_name in view_list:
-                category = category if category != self.default_category else ''
-                self._url_map[category] = dict()
                 self._url_map[category].update({
                     self._get_readable_view_name(view_name): url_map[view_name]
                 })
 
-    @staticmethod
-    def _get_readable_view_name(view_name):
-        return ''.join([
-            ' ' + letter if letter.isupper() else letter
-            for letter in view_name.replace('_', ' ')
-        ]).strip().capitalize()
+    def _get_readable_view_name(self, view_name):
+        _, name, __ = self._registry[view_name]
+        return name or \
+               ''.join([
+                   ' ' + letter if letter.isupper() else letter
+                    for letter in view_name.replace('_', ' ')
+               ]).strip().capitalize()
 
     @staticmethod
     def _get_url_part(view_name):

@@ -138,7 +138,7 @@ class Statsy(object):
         if not group:
             return {}
 
-        cache_key = 'statsy_group_{0}'.format(group)
+        cache_key = StatsyGroup.cache_key_string.format(group)
         group = cache.setdefault(
             cache_key,
             lambda: StatsyGroup.objects.get_or_create(name=group)[0]
@@ -155,7 +155,7 @@ class Statsy(object):
         if not event:
             return {}
 
-        cache_key = 'statsy_event_{0}'.format(event)
+        cache_key = StatsyEvent.cache_key_string.format(event)
         event = cache.setdefault(
             cache_key,
             lambda: StatsyEvent.objects.get_or_create(name=event)[0]

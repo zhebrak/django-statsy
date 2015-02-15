@@ -20,6 +20,7 @@ INSTALLED_APPS = (
 
     # 'djcelery',
     'statsy',
+    'tests',
     'example'
 )
 

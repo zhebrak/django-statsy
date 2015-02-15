@@ -25,5 +25,9 @@ class StatsyCache(object):
 
         return value
 
+    @staticmethod
+    def delete(key):
+        return django_cache.delete(key)
+
 
 cache = StatsyCache()

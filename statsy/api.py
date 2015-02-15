@@ -3,10 +3,12 @@
 import json
 
 from django.http import HttpResponse
+from django.views.decorators.http import require_POST
 
 import statsy
 
 
+@require_POST
 def send(request):
     send_params = set(statsy.get_send_params())
     kwargs = {

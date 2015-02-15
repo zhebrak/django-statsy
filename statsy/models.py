@@ -17,12 +17,18 @@ class StatsyGroup(models.Model):
 
     objects = StatsyGroupQuerySet.as_manager()
 
+    cache_key_string = 'statsy_group_{0}'
+
     class Meta:
         verbose_name = 'Statsy Group'
         verbose_name_plural = 'Statsy Groups'
 
     def __unicode__(self):
         return self.name
+
+    @property
+    def cache_key(self):
+        return self.cache_key_string.format(self.name)
 
 
 class StatsyEvent(models.Model):
@@ -31,12 +37,18 @@ class StatsyEvent(models.Model):
 
     objects = StatsyEventQuerySet.as_manager()
 
+    cache_key_string = 'statsy_event_{0}'
+
     class Meta:
         verbose_name = 'Statsy Event'
         verbose_name_plural = 'Statsy Events'
 
     def __unicode__(self):
         return self.name
+
+    @property
+    def cache_key(self):
+        return self.cache_key_string.format(self.name)
 
 
 class StatsyObject(models.Model):
