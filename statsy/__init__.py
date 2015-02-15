@@ -28,7 +28,7 @@ def autodiscover():
 
 
 def init_signals():
-    import signals
+    import statsy.signals
 
 
 default_app_config = 'statsy.apps.StatsyConfig'
