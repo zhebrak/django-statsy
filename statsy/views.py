@@ -95,7 +95,7 @@ def get_aggregated_time(time_string, aggregate_by):
     aggregated_minutes = (aggregated_minutes + '0')[:2]  # hour:00 fix
     hours = ('0' + hours)[-2:]
 
-    return u':'.join([hours, aggregated_minutes])
+    return ':'.join([hours, aggregated_minutes])
 
 
 def group_list(request):
