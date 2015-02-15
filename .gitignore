@@ -5,3 +5,4 @@ local_*
 TODO
 MANIFEST
 dist/*
+.coverage

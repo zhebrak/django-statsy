@@ -26,11 +26,13 @@ class Statsy(object):
         'value', 'url', 'duration', 'extra'
     ]
 
-    def __init__(self, async=True):
+    def __init__(self, async=True, cache=True):
         if ASYNC and async:
             self.send = self._send_async
         else:
             self.send = self._send
+
+        self.use_cache = cache
 
     def send(self, *args, **kwargs):
         """
@@ -145,11 +147,14 @@ class Statsy(object):
         if not group:
             return {}
 
-        cache_key = StatsyGroup.cache_key_string.format(group)
-        group = cache.setdefault(
-            cache_key,
-            lambda: StatsyGroup.objects.get_or_create(name=group)[0]
-        )
+        if self.use_cache:
+            cache_key = StatsyGroup.cache_key_string.format(group)
+            group = cache.setdefault(
+                cache_key,
+                lambda: StatsyGroup.objects.get_or_create(name=group)[0]
+            )
+        else:
+            group = StatsyGroup.objects.get_or_create(name=group)[0]
 
         if group.is_active:
             return {
@@ -162,11 +167,14 @@ class Statsy(object):
         if not event:
             return {}
 
-        cache_key = StatsyEvent.cache_key_string.format(event)
-        event = cache.setdefault(
-            cache_key,
-            lambda: StatsyEvent.objects.get_or_create(name=event)[0]
-        )
+        if self.use_cache:
+            cache_key = StatsyEvent.cache_key_string.format(event)
+            event = cache.setdefault(
+                cache_key,
+                lambda: StatsyEvent.objects.get_or_create(name=event)[0]
+            )
+        else:
+            event = StatsyEvent.objects.get_or_create(name=event)[0]
 
         if event.is_active:
             return {
