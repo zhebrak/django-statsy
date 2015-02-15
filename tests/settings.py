@@ -5,7 +5,7 @@ test_group = 'test_group'
 test_event = 'test_event'
 
 test_value_str = 'test_value'
-test_value_unicode = unicode('test_value')
+test_value_unicode = u'test_value'
 test_value_int = 123
 test_value_float = 123.0
 
