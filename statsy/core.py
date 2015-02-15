@@ -9,7 +9,11 @@ from django.http import HttpRequest
 from statsy.cache import cache
 from statsy.exceptions import StatsyException, StatsyDisabled
 from statsy.models import StatsyObject, StatsyGroup, StatsyEvent
-from statsy.tasks import send as send_task
+
+try:
+    from statsy.tasks import send as send_task
+except ImportError:
+    send_task = None
 
 from statsy.settings import ASYNC
 from statsy.helpers import get_correct_value_field
@@ -83,6 +87,9 @@ class Statsy(object):
             pass
 
     def _send_async(self, **kwargs):
+        if not send_task:
+            return self._send(**kwargs)
+
         try:
             kwargs = self._clean_kwargs_async(kwargs)
             send_task.apply_async(kwargs=kwargs)
