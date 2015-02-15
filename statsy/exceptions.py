@@ -5,5 +5,10 @@ class StatsyException(Exception):
     pass
 
 
-class StatsyDisabledException(StatsyException):
+class StatsyDisabled(StatsyException):
     pass
+
+
+class AlreadyRegistered(StatsyException):
+    pass
+

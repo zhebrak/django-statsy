@@ -11,32 +11,26 @@ from django.shortcuts import render_to_response, get_object_or_404
 import statsy
 
 
-def send(request):
-    send_params = set(statsy.get_send_params())
-    kwargs = {
-        arg: value
-        for arg, value in request.POST.items()
-        if arg in send_params
-    }
-
-    statsy.send(**kwargs)
-    result = {
-        'response': 'OK'
-    }
-
-    return HttpResponse(json.dumps(result), content_type='application/json')
-
-
-# Graphs
-
-
 def dashboard(request):
     result = {
         'groups': statsy.groups.all(),
         'events': statsy.events.all(),
+        'last_stats': get_last_stats()
     }
 
     return render_to_response('statsy/dashboard.html', result)
+
+
+def custom(request):
+    result = {
+        'url_map': statsy.site.url_map
+    }
+
+    return render_to_response('statsy/custom.html', result)
+
+
+def get_last_stats(limit=10):
+    return statsy.objects.order_by('-created_at')[:10]
 
 
 def get_today_group_stats(request):

@@ -1,0 +1,21 @@
+{% extends 'statsy/base.html' %}
+
+{% block title %}
+    Statsy | Custom
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <h1>Custom Stats</h1>
+        {% for category, category_data in url_map.items %}
+            <div class="statsy__custom_category">
+                <h5>{{ category }}</h5>
+                {% for name, url_reverse in category_data.items %}
+                    <div>
+                        <a href="{% url url_reverse %}">{{ name }}</a>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

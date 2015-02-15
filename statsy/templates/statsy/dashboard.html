@@ -40,5 +40,35 @@
             </div>
         {% endfor %}
         </div>
+
+        <table class="table">
+        </table>
+
+        <div class="statsy__last_stats">
+            <table class="table table-hover">
+                <thead>
+                    <h4>Most recent stats:</h4>
+                    <th>Group</th>
+                    <th>Event</th>
+                    <th>Value</th>
+                    <th>Time</th>
+                </thead>
+                <tbody>
+                    {% for stats in last_stats %}
+                        <tr>
+
+                            <td>{{ stats.group }}</td>
+                            <td>{{ stats.event }}</td>
+                            <td>{{ stats.value }}</td>
+                            <td>{{ stats.created_at|date:"H:i:s" }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+
+                <tfoot>
+                    <td colspan="4">...</td>
+                </tfoot>
+            </table>
+        </div>
     </div>
 {% endblock %}

@@ -7,7 +7,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.http import HttpRequest
 
 from statsy.cache import cache
-from statsy.exceptions import StatsyException, StatsyDisabledException
+from statsy.exceptions import StatsyException, StatsyDisabled
 from statsy.models import StatsyObject, StatsyGroup, StatsyEvent
 from statsy.tasks import send as send_task
 
@@ -17,7 +17,7 @@ from statsy.helpers import get_correct_value_field
 
 class Statsy(object):
     _send_params = [
-        'group', 'event', 'label', 'user', 'user_id',
+        'group', 'event', 'label', 'user', 'user_i'
         'related_object', 'related_object_id', 'related_object_content_type_id',
         'value', 'url', 'duration', 'extra'
     ]
@@ -79,14 +79,14 @@ class Statsy(object):
     def _send(self, **kwargs):
         try:
             StatsyObject.create(**self._clean_kwargs(kwargs))
-        except StatsyDisabledException:
+        except StatsyDisabled:
             pass
 
     def _send_async(self, **kwargs):
         try:
             kwargs = self._clean_kwargs_async(kwargs)
             send_task.apply_async(kwargs=kwargs)
-        except StatsyDisabledException:
+        except StatsyDisabled:
             pass
 
         except StatsyException:
@@ -149,7 +149,7 @@ class Statsy(object):
                 'group_id': group.id
             }
 
-        raise StatsyDisabledException
+        raise StatsyDisabled
 
     def _clean_event(self, event):
         if not event:
@@ -166,7 +166,7 @@ class Statsy(object):
                 'event_id': event.id
             }
 
-        raise StatsyDisabledException
+        raise StatsyDisabled
 
     def _clean_related_object_async(self, related_object):
         return {

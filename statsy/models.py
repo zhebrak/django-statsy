@@ -61,10 +61,9 @@ class StatsyObject(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='created at')
 
-    value_types = ('int', 'text', 'float')
+    value_types = ('float', 'text')
     value = ValueDescriptor(value_types=value_types)
 
-    int_value = models.IntegerField(blank=True, null=True, verbose_name='int value')
     float_value = models.FloatField(blank=True, null=True, verbose_name='float value')
     text_value = models.CharField(max_length=255, blank=True, null=True, verbose_name='text value')
 
@@ -77,6 +76,9 @@ class StatsyObject(models.Model):
     class Meta:
         verbose_name = 'Statsy Object'
         verbose_name_plural = 'Statsy Objects'
+        permissions = (
+            'stats_view'
+        )
 
     def __unicode__(self):
         return '{0}:{1} {2}'.format(self.group, self.event, self.created_at.strftime('%d/%m/%Y %H:%M'))

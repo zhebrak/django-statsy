@@ -1,6 +1,6 @@
 # coding: utf-8
 
-from statsy import statsy
+import statsy
 
 
 class StatsyMiddleware(object):

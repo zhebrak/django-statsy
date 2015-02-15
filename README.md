@@ -29,13 +29,10 @@ Inside the view:
 
 ```python
 def like(request):
-  ...
-
   statsy.send(
     group='post', event='like', user=request.user,
     value=17, related_object=post
   )
-
   ...
 ```
 
@@ -47,6 +44,7 @@ class AboutView(WatchMixin, TemplateView):
 
     watch_group = 'info'
     watch_event = 'page_view'
+    ...
 ```
 
 From the template:

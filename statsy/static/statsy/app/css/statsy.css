@@ -1,3 +1,11 @@
+h1 {
+    margin-bottom: 30px !important;
+}
+
+.statsy__last_stats {
+    margin-top: 50px
+}
+
 .statsy__chart {
     padding: 20px;
     margin-bottom: 30px;
@@ -24,4 +32,8 @@
 .footer {
     margin: 20px 0 10px 0;
     text-align: center;
+}
+
+.statsy__custom_category {
+    margin-bottom: 30px;
 }

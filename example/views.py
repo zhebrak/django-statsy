@@ -25,10 +25,10 @@ def get_post(request, post_id):
     post = get_object_or_404(Post.objects.all(), pk=post_id)
     content_type = ContentType.objects.get_for_model(post.__class__)
 
-    # statsy.send(
-    #     group='post', event='page_view', user=request.user,
-    #     url=request.path, related_object=post
-    # )
+    statsy.send(
+        group='post', event='page_view', user=request.user,
+        url=request.path, related_object=post
+    )
 
     context = {
         'post': post,

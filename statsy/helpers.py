@@ -30,10 +30,7 @@ def memoize(function):
 
 @memoize
 def get_correct_value_field(value):
-    if isinstance(value, int) or (isinstance(value, str) and string_is_intable(value)):
-        return 'int_value', int(value)
-
-    if isinstance(value, float) or (isinstance(value, str) and string_is_floatable(value)):
+    if isinstance(value, (float, int)) or (isinstance(value, str) and string_is_floatable(value)):
         return 'float_value', float(value)
 
     return 'text_value', str(value)
