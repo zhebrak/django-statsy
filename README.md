@@ -90,6 +90,22 @@ If you want to display collected statistics you will also have to add Statsy's U
   ...
 ```
 
+### Configuration
+There are some settings you may want to change (default values are specified)
+```python
+# settings.py
+
+# By default Statsy caches lookups for a group and event
+STATSY_CACHE_TIMEOUT = 60 * 15  # in seconds 
+
+# Statsy can work in async mode with Celery up and running
+STATSY_ASYNC = False
+
+# Permission to view stats pages
+STATSY_VIEW_PERMISSION = 'statsy.stats_view'
+```
+
+
 ### Collect Options
 
 All are optional.
@@ -121,6 +137,31 @@ All are optional.
 
 # JSON for an extra data
 'extra'
+```
+
+### Extending
+
+If you want to add your custom stats page to Statsy you'll have to register it manually in "stats.py"
+
+```python
+# stats.py
+import statsy
+
+def some_awesome_stats(request):
+    return render_to_response('app/awesome_stats.html')
+
+statsy.site.register(some_awesome_stats)
+```
+
+You can also specify a category, a name or a permission
+
+```python
+statsy.site.register(
+    some_awesome_stats,
+    category='Awesome stats',
+    name='Most awesome',
+    permission='user.view_awesome_stats'
+)
 ```
 
 ### Roadmap
