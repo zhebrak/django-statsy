@@ -77,7 +77,7 @@ class StatsyObject(models.Model):
         verbose_name = 'Statsy Object'
         verbose_name_plural = 'Statsy Objects'
         permissions = (
-            'stats_view'
+            ('stats_view', 'Can view stats'),
         )
 
     def __unicode__(self):

@@ -7,12 +7,12 @@ import statsy
 
 
 class AverageLikeValuePerHour(TemplateView):
-    template_name = 'example/stats2.html'
+    template_name = 'example/stats.html'
 
 
-def average_like_value_per_hour(request):
+def max_like_value_per_hour(request):
     return render_to_response('example/stats.html')
 
 
-statsy.site.register(average_like_value_per_hour)
+statsy.site.register(max_like_value_per_hour)
 statsy.site.register(AverageLikeValuePerHour.as_view(), category='Everyday')
