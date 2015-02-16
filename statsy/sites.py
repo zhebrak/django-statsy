@@ -3,7 +3,7 @@
 from functools import update_wrapper
 
 from django.contrib.auth.decorators import permission_required
-from django.http import Http404
+from django.core.exceptions import PermissionDenied
 from django.views.decorators.csrf import csrf_protect
 
 import statsy.api as api
@@ -39,7 +39,7 @@ class StatsySite(object):
     def stats_view(self, view):
         def inner(request, *args, **kwargs):
             if not self.has_permission(request):
-                raise Http404
+                raise PermissionDenied
 
             return view(request, *args, **kwargs)
 

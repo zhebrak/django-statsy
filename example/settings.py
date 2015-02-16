@@ -60,7 +60,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.csrf',
 )
 
-CELERY_APP = 'celery_app.app'
+CELERY_APP = 'example.celery_app.app'
 
 try:
     from local_settings import *

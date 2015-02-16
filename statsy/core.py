@@ -4,7 +4,6 @@ import time
 from functools import wraps, partial
 
 from django.contrib.contenttypes.models import ContentType
-from django.http import HttpRequest
 
 from statsy.cache import cache
 from statsy.exceptions import StatsyException, StatsyDisabled
@@ -50,17 +49,8 @@ class Statsy(object):
 
             @wraps(func)
             def inner(request, *inner_args, **inner_kwargs):
-                func_self = None
-                if not isinstance(request, HttpRequest):
-                    inner_args = list(inner_args)
-                    func_self = request
-                    request = inner_args.pop(0)
-
                 time_start = time.time()
-                if func_self:
-                    result = func(func_self, request, *inner_args, **inner_kwargs)
-                else:
-                    result = func(request, *inner_args, **inner_kwargs)
+                result = func(request, *inner_args, **inner_kwargs)
                 duration = int((time.time() - time_start) * 1000)
 
                 user = request.user if request.user.is_authenticated() else None
@@ -93,8 +83,7 @@ class Statsy(object):
             return self._send(**kwargs)
 
         try:
-            kwargs = self._clean_kwargs_async(kwargs)
-            send_task.apply_async(kwargs=kwargs)
+            send_task.apply_async(**self._clean_kwargs_async(kwargs))
         except StatsyDisabled:
             pass
 

@@ -16,6 +16,7 @@ class WatchMixin(object):
             'value': self.watch_value,
             'label': self.watch_label
         }
+
         return statsy.watch(**watch_map)(
             super(WatchMixin, self).dispatch
         )(request, *args, **kwargs)
