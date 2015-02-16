@@ -23,7 +23,7 @@ class StatsySite(object):
 
     def register(self, view, name=None, category=default_category, permission=None):
         if view in self._registry:
-            raise AlreadyRegistered('The view %s is already registered' % view.__name__)
+            raise AlreadyRegistered('The view {0} is already registered'.format(view.__name__))
 
         self._registry[view.__name__] = (view, name, permission)
 

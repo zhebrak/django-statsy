@@ -21,4 +21,8 @@ def min_like_value_per_hour(request):
 statsy.site.register(max_like_value_per_hour, name='Max Like', category='Like')
 statsy.site.register(min_like_value_per_hour, name='Min Like', category='Like')
 
-statsy.site.register(AverageLikeValuePerHour.as_view(), category='Everyday', permission='stats.custom_permission')
+statsy.site.register(
+    AverageLikeValuePerHour.as_view(),
+    category='Everyday',
+    permission='stats.custom_permission'
+)

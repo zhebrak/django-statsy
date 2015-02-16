@@ -1,6 +1,5 @@
 # coding: utf-8
 
-
 test_group = 'test_group'
 test_event = 'test_event'
 

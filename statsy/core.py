@@ -21,7 +21,7 @@ from statsy.helpers import get_correct_value_field
 
 class Statsy(object):
     _send_params = [
-        'group', 'event', 'label', 'user', 'user_i'
+        'group', 'event', 'label', 'user', 'user_id'
         'related_object', 'related_object_id', 'related_object_content_type_id',
         'value', 'url', 'duration', 'extra'
     ]
