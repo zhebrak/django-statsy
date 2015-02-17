@@ -101,6 +101,9 @@ STATSY_CACHE_TIMEOUT = 60 * 15  # in seconds
 # Statsy can work in async mode with Celery up and running
 STATSY_ASYNC = False
 
+# Full path to Celery application instance (e.g. 'example.celery_app.app')
+CELERY_APP = None
+
 # Permission to view stats pages
 STATSY_VIEW_PERMISSION = 'statsy.stats_view'
 ```
