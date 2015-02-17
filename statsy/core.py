@@ -1,7 +1,7 @@
 # coding: utf-8
 
 import time
-from functools import wraps, partial
+from functools import wraps
 
 from django.contrib.contenttypes.models import ContentType
 
@@ -83,7 +83,7 @@ class Statsy(object):
             return self._send(**kwargs)
 
         try:
-            send_task.apply_async(**self._clean_kwargs_async(kwargs))
+            send_task.delay(**self._clean_kwargs_async(kwargs))
         except StatsyDisabled:
             pass
 
@@ -93,15 +93,19 @@ class Statsy(object):
     def _clean_kwargs(self, kwargs, clean_template=None):
         cleaned_kwargs = kwargs.copy()
         for kwarg in kwargs.keys():
-            if clean_template:
-                clean_kwarg_func = clean_template.format(kwarg) if clean_template else ''
-            else:
-                clean_kwarg_func = '_clean_{0}'.format(kwarg)
 
-            if hasattr(self, clean_kwarg_func):
-                    cleaned_kwargs.update(
-                        getattr(self, clean_kwarg_func)(cleaned_kwargs.pop(kwarg) or None)
-                    )
+            default_clean_func = '_clean_{0}'.format(kwarg)
+            clean_func = default_clean_func
+
+            if clean_template:
+                clean_func = clean_template.format(kwarg)
+                if not hasattr(self, clean_func):
+                    clean_func = default_clean_func
+
+            if hasattr(self, clean_func):
+                cleaned_kwargs.update(
+                    getattr(self, clean_func)(cleaned_kwargs.pop(kwarg) or None)
+                )
 
         return cleaned_kwargs
 
@@ -176,7 +180,7 @@ class Statsy(object):
     def _clean_content_object_async(self, content_object):
         return {
             'object_id': content_object.id,
-            'content_type_id': ContentType.objects.get_for_model(content_object.__class__)
+            'content_type_id': ContentType.objects.get_for_model(content_object.__class__).id
         }
 
     def get_send_params(self):

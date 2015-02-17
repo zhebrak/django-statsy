@@ -18,5 +18,5 @@ else:
 
 
 @app.task
-def send(self, **kwargs):
+def send(**kwargs):
     StatsyObject.create(**kwargs)
