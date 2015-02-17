@@ -3,7 +3,7 @@
 from distutils.core import setup
 
 
-__version__ = '0.0.7.1dev'
+__version__ = '0.0.8dev'
 
 install_requires = [
     'Django>=1.7',
