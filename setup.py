@@ -3,10 +3,10 @@
 from distutils.core import setup
 
 
-__version__ = '0.0.7dev'
+__version__ = '0.0.7.1dev'
 
 install_requires = [
-    'Django==1.7.4',
+    'Django>=1.7',
     'jsonfield==1.0.2'
 ]
 

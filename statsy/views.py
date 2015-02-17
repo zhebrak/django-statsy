@@ -4,6 +4,7 @@ import json
 
 from datetime import datetime
 
+from django.conf import settings
 from django.db.models import Count
 from django.http import HttpResponse
 from django.shortcuts import render_to_response, get_object_or_404
@@ -44,8 +45,15 @@ def get_today_event_stats(request):
 
 
 def get_aggregated_today_stats(category, aggregation_period=15):
+    time_extract_sqlite = "strftime('%H:%M', created_at)"
+    time_extract_mysql = "DATE_FORMAT(created_at, '%%H:%%i')"
+
+    time_extract = time_extract_mysql
+    if settings.DATABASES['default']['ENGINE'] == 'django.db.backends.sqlite3':
+        time_extract = time_extract_sqlite
+
     today_stats = statsy.objects.today().select_related(category)\
-        .extra({"time": "strftime('%H:%M', created_at)"})\
+        .extra({"time": time_extract})\
         .values(category + '__name', 'time').annotate(count=Count(category + '_id'))
 
     aggregated_stats = dict()
