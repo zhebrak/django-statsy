@@ -1,5 +1,7 @@
 # coding: utf-8
 
+from datetime import datetime
+
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
@@ -67,11 +69,11 @@ class StatsyObject(models.Model):
 
     label = models.CharField(max_length=255, blank=True, null=True, verbose_name='label')
 
-    related_object_content_type = models.ForeignKey(ContentType, blank=True, null=True)
-    related_object_id = models.PositiveIntegerField(blank=True, null=True)
-    related_object = GenericForeignKey('related_object_content_type', 'related_object_id')
+    content_type = models.ForeignKey(ContentType, blank=True, null=True)
+    object_id = models.PositiveIntegerField(blank=True, null=True)
+    content_object = GenericForeignKey('content_type', 'object_id')
 
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name='created at')
+    created_at = models.DateTimeField(blank=True, null=True, db_index=True, verbose_name='created at')
 
     value_types = ('float', 'text')
     value = ValueDescriptor(value_types=value_types)
@@ -81,7 +83,7 @@ class StatsyObject(models.Model):
 
     url = models.URLField(blank=True, null=True, verbose_name='url')
     duration = models.IntegerField(blank=True, null=True, verbose_name='duration')
-    extra = JSONField(blank=True, null=True, verbose_name='extra')
+    extra = JSONField(blank=True, null=True, max_length=1024, verbose_name='extra')
 
     objects = StatsyQuerySet.as_manager()
 
@@ -93,11 +95,21 @@ class StatsyObject(models.Model):
         )
 
     def __unicode__(self):
-        return '{0}:{1} {2}'.format(self.group, self.event, self.created_at.strftime('%d/%m/%Y %H:%M'))
+        if self.label:
+            return '{0}:{1}:{2} {3}'.format(
+                self.group, self.event, self.label,
+                self.created_at.strftime('%d/%m/%Y %H:%M')
+            )
+
+        return '{0}:{1} {3}'.format(self.group, self.event, self.created_at.strftime('%d/%m/%Y %H:%M'))
+
 
     @classmethod
     def create(cls, **kwargs):
         value = kwargs.pop('value', None)
+
+        if 'created_at' not in kwargs:
+            kwargs['created_at'] = datetime.now()
 
         new_object = cls.objects.create(**kwargs)
         new_object.value = value

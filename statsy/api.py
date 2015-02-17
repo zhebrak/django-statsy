@@ -17,6 +17,9 @@ def send(request):
         if arg in send_params
     }
 
+    if 'user' not in kwargs and 'user_id' not in kwargs:
+        kwargs['user'] = request.user
+
     statsy.send(**kwargs)
     result = {
         'response': 'OK'

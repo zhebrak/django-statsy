@@ -21,7 +21,7 @@ from statsy.helpers import get_correct_value_field
 class Statsy(object):
     _send_params = [
         'group', 'event', 'label', 'user', 'user_id'
-        'related_object', 'related_object_id', 'related_object_content_type_id',
+        'content_object', 'object_id', 'content_type_id',
         'value', 'url', 'duration', 'extra'
     ]
 
@@ -105,7 +105,8 @@ class Statsy(object):
 
         return cleaned_kwargs
 
-    _clean_kwargs_async = partial(_clean_kwargs, clean_template='_clean_{0}_async')
+    def _clean_kwargs_async(self, kwargs):
+        return self._clean_kwargs(kwargs, clean_template='_clean_{0}_async')
 
     def _clean_value(self, value):
         if not value:
@@ -172,10 +173,10 @@ class Statsy(object):
 
         raise StatsyDisabled
 
-    def _clean_related_object_async(self, related_object):
+    def _clean_content_object_async(self, content_object):
         return {
-            'related_object_id': related_object.id,
-            'related_object_content_type_id': ContentType.objects.get_for_model(related_object.__class__)
+            'object_id': content_object.id,
+            'content_type_id': ContentType.objects.get_for_model(content_object.__class__)
         }
 
     def get_send_params(self):

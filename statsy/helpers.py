@@ -33,5 +33,10 @@ def get_correct_value_field(value):
     if isinstance(value, (float, int)) or (isinstance(value, str) and string_is_floatable(value)):
         return 'float_value', float(value)
 
-    return 'text_value', str(value)
+    try:
+        value = str(value)
+    except UnicodeEncodeError:
+        pass
+
+    return 'text_value', value
 

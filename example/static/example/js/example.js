@@ -7,8 +7,8 @@ $(function(){
                 'group': 'js',
                 'event': 'like',
                 'value': 42,
-                'related_object_id': $(this).attr('data-id'),
-                'related_object_content_type_id': $(this).attr('data-content_type-id')
+                'object_id': $(this).attr('data-id'),
+                'content_type_id': $(this).attr('data-content_type-id')
             }
         );
 

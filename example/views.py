@@ -27,7 +27,7 @@ def get_post(request, post_id):
 
     statsy.send(
         group='post', event='page_view', user=request.user,
-        url=request.path, related_object=post
+        url=request.path, content_object=post
     )
 
     context = {

@@ -31,7 +31,7 @@ Inside the view:
 def like(request):
   statsy.send(
     group='post', event='like', user=request.user,
-    value=17, related_object=post
+    value=17, content_object=post
   )
   ...
 ```
@@ -96,7 +96,7 @@ There are some settings you may want to change (default values are specified)
 # settings.py
 
 # By default Statsy caches lookups for a group and event
-STATSY_CACHE_TIMEOUT = 60 * 15  # in seconds 
+STATSY_CACHE_TIMEOUT = 60 * 15  # in seconds
 
 # Statsy can work in async mode with Celery up and running
 STATSY_ASYNC = False
@@ -122,7 +122,7 @@ All are optional.
 'user'
 
 # object of the action
-'related_object'
+'content_object'
 
 # value can be <int>, <float> or <str>/<unicode>/etc.
 'value'
