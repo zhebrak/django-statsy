@@ -101,7 +101,7 @@ class StatsyObject(models.Model):
                 self.created_at.strftime('%d/%m/%Y %H:%M')
             )
 
-        return '{0}:{1} {3}'.format(self.group, self.event, self.created_at.strftime('%d/%m/%Y %H:%M'))
+        return '{0}:{1} {2}'.format(self.group, self.event, self.created_at.strftime('%d/%m/%Y %H:%M'))
 
 
     @classmethod

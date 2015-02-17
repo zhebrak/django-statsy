@@ -50,6 +50,7 @@
                     <h4>Most recent stats:</h4>
                     <th>Group</th>
                     <th>Event</th>
+                    <th>Label</th>
                     <th>Value</th>
                     <th>Time</th>
                 </thead>
@@ -59,7 +60,8 @@
 
                             <td>{{ stats.group }}</td>
                             <td>{{ stats.event }}</td>
-                            <td>{{ stats.value }}</td>
+                            <td>{% if stats.label %}{{ stats.label }}{% endif %}</td>
+                            <td>{% if stats.value %}{{ stats.value }}{% endif %}</td>
                             <td>{{ stats.created_at|date:"H:i:s" }}</td>
                         </tr>
                     {% endfor %}
