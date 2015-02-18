@@ -150,10 +150,10 @@ class Statsy(object):
             cache_key = StatsyGroup.cache_key_string.format(group)
             group = cache.setdefault(
                 cache_key,
-                lambda: StatsyGroup.objects.get_or_create(name=group)[0]
+                lambda: self.groups.get_or_create(name=group)[0]
             )
         else:
-            group = StatsyGroup.objects.get_or_create(name=group)[0]
+            group = self.groups.get_or_create(name=group)[0]
 
         if group.is_active:
             return {
@@ -170,10 +170,10 @@ class Statsy(object):
             cache_key = StatsyEvent.cache_key_string.format(event)
             event = cache.setdefault(
                 cache_key,
-                lambda: StatsyEvent.objects.get_or_create(name=event)[0]
+                lambda: self.events.get_or_create(name=event)[0]
             )
         else:
-            event = StatsyEvent.objects.get_or_create(name=event)[0]
+            event = self.events.get_or_create(name=event)[0]
 
         if event.is_active:
             return {

@@ -112,7 +112,7 @@ class StatsyObject(models.Model):
         if 'created_at' not in kwargs:
             kwargs['created_at'] = datetime.now()
 
-        new_object = cls.objects.create(**kwargs)
+        new_object = cls(**kwargs)
         new_object.value = value
         new_object.save()
 

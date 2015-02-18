@@ -3,7 +3,17 @@
 from distutils.core import setup
 
 
-__version__ = '0.0.9.4dev'
+__version__ = '0.0.9.5dev'
+
+short_description = 'Statistics for Django projects'
+
+try:
+    import pypandoc
+
+    long_description = pypandoc.convert('README.md', 'rst')
+except (IOError, ImportError):
+    long_description = short_description
+
 
 install_requires = [
     'Django>=1.7',
@@ -14,7 +24,8 @@ setup(
     name='django-statsy',
     packages=['statsy'],
     version=__version__,
-    description='Statistics for Django projects',
+    description=short_description,
+    long_description=long_description,
     author='Alexander Zhebrak',
     author_email='fata2ex@gmail.com',
     license='MIT',
