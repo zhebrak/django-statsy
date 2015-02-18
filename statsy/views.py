@@ -31,7 +31,7 @@ def custom(request):
 
 
 def get_last_stats(limit=10):
-    return statsy.objects.order_by('-created_at')[:10]
+    return statsy.objects.select_related('group', 'event').order_by('-created_at')[:10]
 
 
 def get_today_group_stats(request):

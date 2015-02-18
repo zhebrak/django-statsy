@@ -1,6 +1,8 @@
 # coding: utf-8
 
 import time
+
+from datetime import datetime
 from functools import wraps
 
 from django.contrib.contenttypes.models import ContentType
@@ -81,6 +83,9 @@ class Statsy(object):
     def _send_async(self, **kwargs):
         if not send_task:
             return self._send(**kwargs)
+
+        if 'created_at' not in kwargs:
+            kwargs['created_at'] = datetime.now()
 
         try:
             send_task.delay(**self._clean_kwargs_async(kwargs))

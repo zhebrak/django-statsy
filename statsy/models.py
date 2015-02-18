@@ -90,6 +90,7 @@ class StatsyObject(models.Model):
     class Meta:
         verbose_name = 'Statsy Object'
         verbose_name_plural = 'Statsy Objects'
+        ordering = ('-created_at',)
         permissions = (
             ('stats_view', 'Can view stats'),
         )
