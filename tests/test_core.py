@@ -18,7 +18,7 @@ class CoreTest(TestCase):
                 label=test_label, value=test_value
             )
 
-            statsy_object = self.statsy.objects.select_related('group', 'event').last()
+            statsy_object = self.statsy.objects.select_related('group', 'event').order_by('pk').last()
 
             self.assertEqual(test_group, statsy_object.group.name)
             self.assertEqual(test_event, statsy_object.event.name)
