@@ -16,7 +16,6 @@ def get_test_urlpatterns():
 
         url_list.append(url_name)
 
-
     return urlpatterns, url_list
 
 

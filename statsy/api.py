@@ -17,7 +17,10 @@ def send(request):
         if arg in send_params
     }
 
-    if 'user' not in kwargs and 'user_id' not in kwargs:
+    if 'value' in kwargs and request.POST.get('value_type', 'string') == 'number':
+        kwargs['value'] = float(kwargs['value'])
+
+    if 'user' not in kwargs and 'user_id' not in kwargs and request.user.is_authenticated():
         kwargs['user'] = request.user
 
     statsy.send(**kwargs)

@@ -77,7 +77,7 @@ var createChart = function(groupDashboard, series, label) {
 
 
 $(function () {
-    drawStats($('#dashboardGroupContainer'), 'Today stats count per Group');
-    drawStats($('#dashboardEventContainer'), 'Today stats count per Event');
+    drawStats($('#dashboardGroupContainer'), 'Count per Group');
+    drawStats($('#dashboardEventContainer'), 'Count per Event');
 });
 

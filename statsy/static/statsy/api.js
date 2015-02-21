@@ -5,6 +5,7 @@
 
     Statsy.prototype.send = function(data) {
         updateWithCSRF(data);
+        updateWithValueType(data);
 
         $.post(this.url, data);
     };
@@ -13,4 +14,10 @@
         data['csrfmiddlewaretoken'] = $('input[name=csrfmiddlewaretoken]').val();
         return data;
     }
+
+    function updateWithValueType(data) {
+        data['value_type'] = typeof(data['value']);
+        return data;
+    }
+
 }(jQuery));
