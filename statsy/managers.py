@@ -21,22 +21,10 @@ class StatsyEventQuerySet(StatsyBaseQuerySet):
 
 class StatsyQuerySet(models.QuerySet):
     def by_group(self, group):
-        if isinstance(group, str):
-            return self.select_related('group').filter(group__name=group)
-
-        if isinstance(group, int):
-            return self.filter(group_id=group)
-
-        return self.filter(group=group)
+        return self.select_related('group').filter(group__name=group)
 
     def by_event(self, event):
-        if isinstance(event, str):
-            return self.select_related('event').filter(event__name=event)
-
-        if isinstance(event, int):
-            return self.filter(event_id=event)
-
-        return self.filter(event=event)
+        return self.select_related('event').filter(event__name=event)
 
     def by_user(self, user):
         if isinstance(user, get_user_model()):
@@ -74,3 +62,6 @@ class StatsyQuerySet(models.QuerySet):
         )
 
         return self.by_time(start=start_of_today)
+
+    def active(self):
+        return self.select_related('group', 'event').filter(group__is_active=True, event__is_active=True)

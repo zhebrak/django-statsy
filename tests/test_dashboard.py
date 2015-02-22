@@ -6,14 +6,13 @@ from django.test import TestCase, Client
 
 import statsy
 
+from tests.settings import test_username, test_password, test_group, test_event, test_label, test_value_list
+
 
 class DashboardTest(TestCase):
     def setUp(self):
         self.statsy = statsy.Statsy(cache=False)
         self.client = Client()
-
-        test_username = 'test'
-        test_password = 'test'
 
         get_user_model().objects.create_superuser(test_username, 'test@test.com', test_password)
 
@@ -21,6 +20,12 @@ class DashboardTest(TestCase):
             username=test_username,
             password=test_password
         )
+
+        for test_value in test_value_list:
+            statsy.send(
+                group=test_group, event=test_event,
+                label=test_label, value=test_value
+            )
 
     def test_dashboard(self):
         response = self.client.get(reverse('statsy.dashboard'))

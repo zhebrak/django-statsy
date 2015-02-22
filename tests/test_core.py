@@ -1,6 +1,6 @@
 # coding: utf-8
 
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 import statsy
 
@@ -25,3 +25,14 @@ class CoreTest(TestCase):
             self.assertEqual(test_label, statsy_object.label)
             self.assertEqual(test_value, statsy_object.value)
 
+    @override_settings(STATSY_ASYNC=True)
+    def test_send_async(self):
+        # It falls back to ASYNC=False mode
+
+        statsy_async = statsy.Statsy(async=True)
+
+        for test_value in test_value_list:
+            statsy_async.send(
+                group=test_group, event=test_event,
+                label=test_label, value=test_value
+            )

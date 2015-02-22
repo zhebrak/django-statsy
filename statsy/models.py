@@ -13,10 +13,32 @@ from statsy.descriptors import ValueDescriptor
 from statsy.managers import StatsyGroupQuerySet, StatsyEventQuerySet, StatsyQuerySet
 
 
-class StatsyGroup(models.Model):
+class StatsyCategory(models.Model):
+    """ Abstract base model for Group and Event """
+
     name = models.CharField(max_length=30, verbose_name='name')
     is_active = models.BooleanField(default=True, verbose_name='is active')
 
+    class Meta:
+        abstract = True
+
+    def __unicode__(self):
+        return self.name
+
+    @property
+    def cache_key(self):
+        return self.cache_key_string.format(self.name)
+
+    def activate(self):
+        self.is_active = True
+        self.save()
+
+    def deactivate(self):
+        self.is_active = False
+        self.save()
+
+
+class StatsyGroup(StatsyCategory):
     objects = StatsyGroupQuerySet.as_manager()
 
     cache_key_string = 'statsy_group_{0}'
@@ -25,18 +47,8 @@ class StatsyGroup(models.Model):
         verbose_name = 'Statsy Group'
         verbose_name_plural = 'Statsy Groups'
 
-    def __unicode__(self):
-        return self.name
 
-    @property
-    def cache_key(self):
-        return self.cache_key_string.format(self.name)
-
-
-class StatsyEvent(models.Model):
-    name = models.CharField(max_length=30, verbose_name='name')
-    is_active = models.BooleanField(default=True, verbose_name='is active')
-
+class StatsyEvent(StatsyCategory):
     objects = StatsyEventQuerySet.as_manager()
 
     cache_key_string = 'statsy_event_{0}'
@@ -44,13 +56,6 @@ class StatsyEvent(models.Model):
     class Meta:
         verbose_name = 'Statsy Event'
         verbose_name_plural = 'Statsy Events'
-
-    def __unicode__(self):
-        return self.name
-
-    @property
-    def cache_key(self):
-        return self.cache_key_string.format(self.name)
 
 
 class StatsyObject(models.Model):

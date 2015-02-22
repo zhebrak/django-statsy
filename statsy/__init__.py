@@ -3,13 +3,14 @@
 from django.utils.module_loading import autodiscover_modules
 
 from statsy.core import Statsy
+from statsy.log import logger
 from statsy.sites import site
 
 
 __all__ = [
     'send', 'watch', 'get_send_params'
     'objects', 'groups', 'events',
-    'site', 'autodiscover'
+    'site', 'autodiscover', 'logger'
 ]
 
 _statsy = Statsy()
