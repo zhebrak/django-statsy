@@ -59,14 +59,21 @@ class StatsySite(object):
             url(r'^custom/$', self.stats_view(views.custom), name='statsy.custom'),
 
             url(
-                r'^today_group_stats/$',
-                self.stats_view(views.get_today_group_stats),
-                name='statsy.today_group_stats'
+                r'^today_category_stats/(?P<category>group|event)/$',
+                self.stats_view(views.get_today_category_stats),
+                name='statsy.today_category_stats'
             ),
+
             url(
-                r'^today_event_stats/$',
-                self.stats_view(views.get_today_event_stats),
-                name='statsy.today_event_stats'
+                r'^week_category_stats/(?P<category>group|event)/$',
+                self.stats_view(views.get_week_category_stats),
+                name='statsy.week_category_stats'
+            ),
+
+            url(
+                r'^month_category_stats/(?P<category>group|event)/$',
+                self.stats_view(views.get_month_category_stats),
+                name='statsy.month_category_stats'
             ),
         )
 

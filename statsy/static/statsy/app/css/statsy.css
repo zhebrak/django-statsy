@@ -3,7 +3,28 @@ h1 {
 }
 
 .statsy__last_stats {
-    margin-top: 50px
+    margin-top: 50px;
+    text-align: center;
+    padding: 20px;
+}
+
+.statsy__last_stats table {
+    margin-top: 20px;
+    text-align: left;
+}
+
+.statsy__last_stats__header {
+    font-size: 18px;
+
+}
+
+.statsy__group_period, .statsy__event_period {
+    margin-right: 20px;
+    float: right;
+}
+
+.btn.active.focus, .btn.active:focus, .btn.focus, .btn:active.focus, .btn:active:focus, .btn:focus {
+    outline: none !important;
 }
 
 .statsy__chart {
@@ -12,7 +33,7 @@ h1 {
 }
 
 .statsy__group_list, .statsy__event_list {
-    margin: 10px 0 20px 0;
+    margin: 10px 0 20px 20px;
     line-height: 50px;
 }
 

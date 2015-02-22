@@ -2,7 +2,7 @@
 
 import json
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from django.conf import settings
 from django.db.models import Count
@@ -31,65 +31,107 @@ def custom(request):
 
 
 def get_last_stats(limit=10):
-    return statsy.objects.select_related('group', 'event').order_by('-created_at')[:limit]
+    return statsy.objects.select_related('group', 'event')[:limit]
 
 
-def get_today_group_stats(request):
-    stats = get_aggregated_today_stats('group')
+def get_today_category_stats(request, category):
+    now = datetime.today()
+    start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    aggregation_period = 15  # 15 minutes
+
+    stats = get_aggregated_stats_for_the_period(
+        category=category, start=start, aggregation_period=aggregation_period
+    )
+
     return HttpResponse(json.dumps(stats), content_type='application/json')
 
 
-def get_today_event_stats(request):
-    stats = get_aggregated_today_stats('event')
+def get_week_category_stats(request, category):
+    now = datetime.today()
+    monday = now - timedelta(days=now.weekday())
+    start = monday.replace(hour=0, minute=0, second=0, microsecond=0)
+    aggregation_period = 90  # 90 minutes
+
+    stats = get_aggregated_stats_for_the_period(
+        category=category, start=start, aggregation_period=aggregation_period
+    )
+
     return HttpResponse(json.dumps(stats), content_type='application/json')
 
 
-def get_aggregated_today_stats(category, aggregation_period=15):
-    time_extract_sqlite = "strftime('%H:%M', created_at)"
-    time_extract_mysql = "DATE_FORMAT(created_at, '%%H:%%i')"
+def get_month_category_stats(request, category):
+    now = datetime.today()
+    start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    aggregation_period = 6 * 60  # 6 hours
+
+    stats = get_aggregated_stats_for_the_period(
+        category=category, start=start, aggregation_period=aggregation_period
+    )
+
+    return HttpResponse(json.dumps(stats), content_type='application/json')
+
+
+def get_aggregated_stats_for_the_period(category, start, end=None, aggregation_period=15, average_by=15):
+    time_extract_sqlite = "strftime('%d:%H:%M', created_at)"
+    time_extract_mysql = "DATE_FORMAT(created_at, '%%e:%%H:%%i')"
 
     time_extract = time_extract_mysql
     if settings.DATABASES['default']['ENGINE'] == 'django.db.backends.sqlite3':
         time_extract = time_extract_sqlite
 
-    today_stats = statsy.objects.today().select_related(category)\
+    stats = statsy.objects.by_time(start=start, end=end).select_related(category)\
         .extra({"time": time_extract})\
         .values(category + '__name', 'time').annotate(count=Count(category + '_id'))
 
     aggregated_stats = dict()
-    for data in today_stats:
+    for data in stats:
         name = data[category + '__name']
         if name not in aggregated_stats:
             aggregated_stats[name] = dict()
 
         aggregated_time = get_aggregated_time(data['time'], aggregation_period)
+
         if aggregated_time not in aggregated_stats[name]:
             aggregated_stats[name][aggregated_time] = 0
 
         aggregated_stats[name][aggregated_time] += data['count']
 
+    now = datetime.now()
+
     aggregated_periods = [
         get_aggregated_time(
-            '{0}:{1}'.format(hour, minute),
+            '{0}:{1}:{2}'.format(day, minute / 60, minute % 60),
             aggregation_period
         )
-        for hour in range(0, 24)
-        for minute in range(0, 59, aggregation_period)
+        for day in range(start.day, now.day + 1)
+        for minute in range(0, 60 * 24, aggregation_period)
     ]
 
-    now = datetime.now()
     last_period = get_aggregated_time(
-        '{0}:{1}'.format(now.hour, now.minute),
+        '{0}:{1}:{2}'.format(now.day, now.hour, now.minute),
         aggregation_period
     )
 
     for category, data in aggregated_stats.items():
+        consecutive_null_periods = []
         for period in aggregated_periods:
             if period > last_period:
                 data[period] = None
 
             elif period not in data:
-                data[period] = 0
+                consecutive_null_periods.append(period)
+                if len(consecutive_null_periods) == 10:
+                    for null_period in consecutive_null_periods:
+                        data[null_period] = None
+
+                    consecutive_null_periods = []
+
+                else:
+                    data[period] = 0
+
+            else:
+                consecutive_null_periods = []
+                data[period] /= float(aggregation_period) / average_by
 
         aggregated_stats[category] = sorted(data.items())
 
@@ -97,10 +139,12 @@ def get_aggregated_today_stats(category, aggregation_period=15):
 
 
 def get_aggregated_time(time_string, aggregate_by):
-    hours, minutes = time_string.split(':')
+    day, hours, minutes = time_string.split(':')
+    aggregated_minutes = (int(hours) * 60 + int(minutes)) / aggregate_by
 
-    aggregated_minutes = str(int(minutes) - (int(minutes) % aggregate_by))
-    aggregated_minutes = (aggregated_minutes + '0')[:2]  # hour:00 fix
-    hours = ('0' + hours)[-2:]
+    day = ('0' + day)[-2:]
+    hours = ('0' + str(aggregated_minutes * aggregate_by / 60))[-2:]
+    minutes = ('0' + str((aggregated_minutes * aggregate_by) % 60))[-2:]
 
-    return ':'.join([hours, aggregated_minutes])
+    return ':'.join([day, hours, minutes])
+

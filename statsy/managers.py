@@ -48,19 +48,13 @@ class StatsyQuerySet(models.QuerySet):
 
         if end:
             filter_args.update({
-                'created_at__' + 'lte' if include_end else 'lt': start
+                'created_at__' + 'lte' if include_end else 'lt': end
             })
 
-        return self.filter(**filter_args) if filter_args else self
+        return self.filter(**filter_args) if start or end else self
 
     def today(self):
-        # use d.replace
-        now = datetime.now()
-        start_of_today = datetime(
-            year=now.year, month=now.month, day=now.day,
-            hour=0, minute=0, second=0, microsecond=0
-        )
-
+        start_of_today = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
         return self.by_time(start=start_of_today)
 
     def active(self):

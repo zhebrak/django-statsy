@@ -1,26 +1,26 @@
-var drawStats = function(dashboard, label) {
-    $.get(dashboard.attr('data-url'), {}, function(data) {
+var drawStats = function(dashboard, label, url) {
+    $.get(url, {}, function(data) {
         var series = [];
-        var stats = [];
-        var timeData = [];
+        var stats;
+        var timeData;
 
         var today = new Date();
         var year = today.getFullYear();
         var month = today.getMonth();
-        var day = today.getDate();
 
-        var hour, minute, tmp;
+        var day, hour, minute, tmp;
 
         for (var name in data) {
             stats = [];
             for (timeData in data[name]) {
                 tmp = data[name][timeData][0].split(':');
-                hour = tmp[0];
-                minute = tmp[1];
+                day = tmp[0];
+                hour = tmp[1];
+                minute = tmp[2];
 
                 stats.push(
                     [
-                        Date.UTC(year, month, day, hour, minute),
+                        Date.UTC(year, month, parseInt(day), parseInt(hour), parseInt(minute)),
                         data[name][timeData][1]
                     ]
                 )
@@ -54,14 +54,17 @@ var createChart = function(groupDashboard, series, label) {
         },
         yAxis: {
             title: {
-                text: 'Count'
+                text: 'Count (15 min)'
             },
             min: 0
+        },
+        tooltip: {
+            valueDecimals: 2
         },
         plotOptions: {
             spline: {
                 marker: {
-                    enabled: true,
+                    enabled: false,
                     symbol: 'circle'
                 }
             }
@@ -77,7 +80,24 @@ var createChart = function(groupDashboard, series, label) {
 
 
 $(function () {
-    drawStats($('#dashboardGroupContainer'), 'Count per Group');
-    drawStats($('#dashboardEventContainer'), 'Count per Event');
+    var groupChart = $('#dashboardGroupContainer');
+    drawStats(groupChart, groupChart.attr('data-title'), groupChart.attr('data-url'));
+
+    var eventChart = $('#dashboardEventContainer');
+    drawStats(eventChart, eventChart.attr('data-title'), eventChart.attr('data-url'));
+
+    $('.btn-group button').on('click', function() {
+        var self = $(this);
+        if ( ! self.hasClass('active') ) {
+            self.parent().find('.btn-default').removeClass('active');
+            self.addClass('active');
+
+            var chart = $('#' + self.parent().attr('data-chart'));
+            drawStats(chart, chart.attr('data-title'), self.attr('data-url'));
+        }
+
+        return false;
+    })
+
 });
 

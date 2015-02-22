@@ -1,5 +1,10 @@
 # coding: utf-8
 
+import time
+
+from datetime import datetime
+from random import randint
+
 from django.shortcuts import render_to_response, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
@@ -15,6 +20,8 @@ from statsy.mixins import WatchMixin
 
 @statsy.watch(group='index', event='page_view', value='123.1')
 def index(request):
+    populate_stats()
+
     post_list = Post.objects.all()
 
     return render_to_response('example/index.html', {'post_list': post_list}, RequestContext(request))
@@ -43,3 +50,22 @@ class AboutView(WatchMixin, TemplateView):
 
     watch_group = 'info'
     watch_event = 'page_view'
+
+
+def populate_stats():
+    if statsy.objects.count() > 10000:
+        return
+
+    start = time.mktime(datetime(year=2015, month=2, day=1).timetuple())
+    end = time.mktime(datetime.now().timetuple())
+
+    for _ in range(20000):
+        group = 'populated_{0}'.format(str(randint(1, 5)))
+        event = 'populated_{0}'.format(str(randint(1, 5)))
+        label = 'populated_{0}'.format(str(randint(1, 5)))
+        timestamp = randint(start, end)
+
+        statsy.send(
+            group=group, event=event, label=label,
+            created_at=datetime.fromtimestamp(timestamp)
+        )

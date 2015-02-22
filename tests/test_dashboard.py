@@ -37,12 +37,23 @@ class DashboardTest(TestCase):
 
         self.assertEqual(response.status_code, 200)
 
-    def test_today_group_stats(self):
-        response = self.client.get(reverse('statsy.today_group_stats'))
-
+    def test_today_stats(self):
+        response = self.client.get(reverse('statsy.today_category_stats', args=('group',)))
         self.assertEqual(response.status_code, 200)
 
-    def test_today_event_stats(self):
-        response = self.client.get(reverse('statsy.today_event_stats'))
+        response = self.client.get(reverse('statsy.today_category_stats', args=('event',)))
+        self.assertEqual(response.status_code, 200)
 
+    def test_week_stats(self):
+        response = self.client.get(reverse('statsy.week_category_stats', args=('group',)))
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(reverse('statsy.week_category_stats', args=('event',)))
+        self.assertEqual(response.status_code, 200)
+
+    def test_month_stats(self):
+        response = self.client.get(reverse('statsy.month_category_stats', args=('group',)))
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(reverse('statsy.month_category_stats', args=('event',)))
         self.assertEqual(response.status_code, 200)
