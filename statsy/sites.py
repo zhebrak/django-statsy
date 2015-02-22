@@ -56,14 +56,6 @@ class StatsySite(object):
 
             url(r'^$', self.stats_view(views.dashboard), name='statsy.dashboard'),
 
-            url(r'^group/$', self.stats_view(views.group_list), name='statsy.group_list'),
-            url(r'^group/(?P<group_name>.+)/$', self.stats_view(views.group), name='statsy.group'),
-
-            url(r'^event/$', self.stats_view(views.event_list), name='statsy.event_list'),
-            url(r'^event/(?P<event_name>.+)/$', self.stats_view(views.event), name='statsy.event'),
-
-            url(r'^user/$', self.stats_view(views.user), name='statsy.user'),
-            url(r'^tracking/$', self.stats_view(views.tracking), name='statsy.tracking'),
             url(r'^custom/$', self.stats_view(views.custom), name='statsy.custom'),
 
             url(

@@ -24,3 +24,4 @@ class CoreTest(TestCase):
             self.assertEqual(test_event, statsy_object.event.name)
             self.assertEqual(test_label, statsy_object.label)
             self.assertEqual(test_value, statsy_object.value)
+

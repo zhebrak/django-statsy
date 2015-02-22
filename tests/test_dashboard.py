@@ -26,3 +26,18 @@ class DashboardTest(TestCase):
         response = self.client.get(reverse('statsy.dashboard'))
 
         self.assertEqual(response.status_code, 200)
+
+    def test_custom(self):
+        response = self.client.get(reverse('statsy.custom'))
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_today_group_stats(self):
+        response = self.client.get(reverse('statsy.today_group_stats'))
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_today_event_stats(self):
+        response = self.client.get(reverse('statsy.today_event_stats'))
+
+        self.assertEqual(response.status_code, 200)

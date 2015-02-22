@@ -7,7 +7,7 @@ from datetime import datetime
 from django.conf import settings
 from django.db.models import Count
 from django.http import HttpResponse
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import render_to_response
 
 import statsy
 
@@ -104,30 +104,3 @@ def get_aggregated_time(time_string, aggregate_by):
     hours = ('0' + hours)[-2:]
 
     return ':'.join([hours, aggregated_minutes])
-
-
-def group_list(request):
-    return render_to_response('statsy/group_list.html', {})
-
-
-def group(request, group_name):
-    group_object = get_object_or_404(statsy.groups.all(), name=group_name)
-    return render_to_response('statsy/group.html', {'group': group_object})
-
-
-def event_list(request):
-    return render_to_response('statsy/event_list.html', {})
-
-
-def event(request, event_name):
-    event_object = get_object_or_404(statsy.events.all(), name=event_name)
-    return render_to_response('statsy/event.html', {'event': event_object})
-
-
-def user(request):
-    return render_to_response('statsy/dashboard.html', {})
-
-
-def tracking(request):
-    return render_to_response('statsy/dashboard.html', {})
-

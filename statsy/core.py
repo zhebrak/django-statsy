@@ -89,6 +89,7 @@ class Statsy(object):
 
         try:
             send_task.delay(**self._clean_kwargs_async(kwargs))
+
         except StatsyDisabled:
             pass
 
