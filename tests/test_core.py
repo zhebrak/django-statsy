@@ -28,7 +28,11 @@ class CoreTest(TestCase):
     @override_settings(STATSY_ASYNC=True)
     def test_send_async(self):
         # It falls back to ASYNC=False mode
-        from statsy.tasks import send
+
+        try:
+            from statsy.tasks import send
+        except ImportError:
+            pass
 
         statsy_async = statsy.Statsy(async=True)
 
