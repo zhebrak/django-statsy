@@ -140,7 +140,7 @@ def get_aggregated_stats_for_the_period(category, start, end=None, aggregation_p
 
 def get_aggregated_time(time_string, aggregate_by):
     day, hours, minutes = time_string.split(':')
-    aggregated_minutes = (int(hours) * 60 + int(minutes)) / aggregate_by
+    aggregated_minutes = int(float(hours) * 60 + float(minutes)) / aggregate_by
 
     day = ('0' + day)[-2:]
     hours = ('0' + str(aggregated_minutes * aggregate_by / 60))[-2:]

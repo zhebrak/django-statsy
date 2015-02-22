@@ -7,5 +7,5 @@ import statsy
 
 class LogTest(TestCase):
     def test_log(self):
-        statsy.logger.info('INFO message')
-        statsy.logger.error('Error message')
+        statsy.logger.info('TEST info message')
+        statsy.logger.error('TEST error message')
