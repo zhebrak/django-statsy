@@ -115,7 +115,7 @@ def get_aggregated_stats_for_the_period(category, start, end=None, aggregation_p
     for category, data in aggregated_stats.items():
         consecutive_null_periods = []
         for period in aggregated_periods:
-            if period > last_period:
+            if period >= last_period:
                 data[period] = None
 
             elif period not in data:

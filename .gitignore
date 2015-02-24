@@ -6,3 +6,4 @@ TODO
 MANIFEST
 dist/*
 .coverage
+topypi

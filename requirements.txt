@@ -1,2 +1,2 @@
 django==1.7.4
-jsonfield==1.0.2
+jsonfield==1.0.3
