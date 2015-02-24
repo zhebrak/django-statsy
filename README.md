@@ -92,18 +92,11 @@ If you want to display collected statistics you will also have to add Statsy's U
 
 Default out of the box graphs.
 
-Groups
 ![group_overview](https://raw.github.com/fata1ex/django-statsy/master/docs/img/overview_group.png)
-
-Events
-![event_overview](https://raw.github.com/fata1ex/django-statsy/master/docs/img/overview_event.png)
-
-Recent
-![recent_overview](https://raw.github.com/fata1ex/django-statsy/master/docs/img/overview_recent.png)
 
 
 ### Configuration
-There are some settings you may want to change (default values are specified)
+There are some settings you may want to change (default values are specified).
 ```python
 # settings.py
 
@@ -156,7 +149,7 @@ All are optional.
 
 ### Extending
 
-If you want to add your custom stats page to Statsy you'll have to register it manually in "stats.py"
+If you want to add your custom stats page to Statsy you'll have to register it manually in "stats.py".
 
 ```python
 # stats.py
