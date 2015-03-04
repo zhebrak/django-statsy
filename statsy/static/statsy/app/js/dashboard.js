@@ -38,8 +38,8 @@ var drawStats = function(dashboard, label, url) {
     })
 };
 
-var createChart = function(groupDashboard, series, label) {
-    groupDashboard.highcharts({
+var createChart = function(chart, series, label) {
+    chart.highcharts({
         chart: {
             type: 'spline'
         },
@@ -59,7 +59,12 @@ var createChart = function(groupDashboard, series, label) {
             min: 0
         },
         tooltip: {
-            valueDecimals: 2
+            valueDecimals: 2,
+            useHTML: true,
+            formatter: function() {
+                return  '<table><tr><td>' + Highcharts.dateFormat('%A, %b %e, %H:%M ', new Date(this.x)) +'</td><tr/>' +
+                     '<td style="text-align: center;"><em style="display: inline-block; height:8px; width: 8px; border-radius: 50%; background-color:' + this.series.color +';"></em><span style="color:' + this.series.color + ';">  ' + this.series.name + '</span>: <b>' + this.y.toFixed(2) + '</b></td></table>';
+            }
         },
         plotOptions: {
             spline: {
