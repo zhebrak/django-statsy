@@ -53,10 +53,10 @@ class AboutView(WatchMixin, TemplateView):
 
 
 def populate_stats():
-    if statsy.objects.count() > 10000:
+    if statsy.objects.count() > 100000:
         return
 
-    start = time.mktime(datetime(year=2015, month=2, day=1).timetuple())
+    start = time.mktime(datetime(year=2015, month=3, day=1).timetuple())
     end = time.mktime(datetime.now().timetuple())
 
     for _ in range(20000):
