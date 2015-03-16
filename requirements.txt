@@ -1,2 +1,2 @@
-django==1.7.5
+django==1.7.6
 jsonfield==1.0.3

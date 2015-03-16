@@ -174,6 +174,7 @@ statsy.site.register(
 
 ### Roadmap
 - Enhanced statistics view
+- More out of the box charts
 - Aggregation over time
 - User tracking
 - Realtime statistics
