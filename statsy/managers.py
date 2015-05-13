@@ -5,6 +5,8 @@ from datetime import datetime
 from django.contrib.auth import get_user_model
 from django.db import models
 
+import statsy
+
 
 class StatsyBaseQuerySet(models.QuerySet):
     def active(self):
@@ -21,10 +23,22 @@ class StatsyEventQuerySet(StatsyBaseQuerySet):
 
 class StatsyQuerySet(models.QuerySet):
     def by_group(self, group):
-        return self.select_related('group').filter(group__name=group)
+        if isinstance(group, str):
+            group_id = statsy.groups.get(name=group).id
+
+        elif isinstance(group, int):
+            group_id = group
+
+        return self.filter(group_id=group_id)
 
     def by_event(self, event):
-        return self.select_related('event').filter(event__name=event)
+        if isinstance(event, str):
+            event_id = statsy.events.get(name=event).id
+
+        elif isinstance(event, int):
+            event_id = event
+
+        return self.filter(event_id=event_id)
 
     def by_user(self, user):
         if isinstance(user, get_user_model()):

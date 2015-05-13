@@ -5,3 +5,4 @@ include setup.py
 recursive-include statsy/static *
 recursive-include statsy/templates *
 recursive-include statsy/templatetags *
+recursive-include statsy/migrations *
