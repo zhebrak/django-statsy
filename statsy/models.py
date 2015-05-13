@@ -99,6 +99,9 @@ class StatsyObject(models.Model):
         permissions = (
             ('stats_view', 'Can view stats'),
         )
+        index_together = [
+            ("content_type", "object_id"),
+        ]
 
     def __unicode__(self):
         if self.label:
