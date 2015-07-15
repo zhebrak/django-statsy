@@ -5,11 +5,11 @@ import time
 from datetime import datetime
 from functools import wraps
 
+from django.apps import apps
 from django.contrib.contenttypes.models import ContentType
 
 from statsy.cache import cache
 from statsy.exceptions import StatsyException, StatsyDisabled
-from statsy.models import StatsyObject, StatsyGroup, StatsyEvent
 
 try:
     from statsy.tasks import send as send_task
@@ -76,7 +76,7 @@ class Statsy(object):
 
     def _send(self, **kwargs):
         try:
-            StatsyObject.create(**self._clean_kwargs(kwargs))
+            apps.get_model('statsy', 'StatsyObject').create(**self._clean_kwargs(kwargs))
         except StatsyDisabled:
             pass
 
@@ -148,7 +148,7 @@ class Statsy(object):
             return {}
 
         if self.use_cache:
-            cache_key = StatsyGroup.cache_key_string.format(group)
+            cache_key = apps.get_model('statsy', 'StatsyGroup').cache_key_string.format(group)
             group = cache.setdefault(
                 cache_key,
                 lambda: self.groups.get_or_create(name=group)[0]
@@ -168,7 +168,7 @@ class Statsy(object):
             return {}
 
         if self.use_cache:
-            cache_key = StatsyEvent.cache_key_string.format(event)
+            cache_key = apps.get_model('statsy', 'StatsyEvent').cache_key_string.format(event)
             event = cache.setdefault(
                 cache_key,
                 lambda: self.events.get_or_create(name=event)[0]
@@ -192,6 +192,6 @@ class Statsy(object):
     def get_send_params(self):
         return self._send_params
 
-    objects = StatsyObject.objects
-    groups = StatsyGroup.objects
-    events = StatsyEvent.objects
+    objects = apps.get_model('statsy', 'StatsyObject').objects
+    groups = apps.get_model('statsy', 'StatsyGroup').objects
+    events = apps.get_model('statsy', 'StatsyEvent').objects

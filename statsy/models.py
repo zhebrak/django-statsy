@@ -60,11 +60,11 @@ class StatsyEvent(StatsyCategory):
 
 class StatsyObject(models.Model):
     group = models.ForeignKey(
-        StatsyGroup, blank=True, null=True,
+        'StatsyGroup', blank=True, null=True,
         related_name='statsy_object_list', verbose_name='group'
     )
     event = models.ForeignKey(
-        StatsyEvent, blank=True, null=True,
+        'StatsyEvent', blank=True, null=True,
         related_name='statsy_object_list', verbose_name='event'
     )
     user = models.ForeignKey(
@@ -111,7 +111,6 @@ class StatsyObject(models.Model):
             )
 
         return '{0}:{1} {2}'.format(self.group, self.event, self.created_at.strftime('%d/%m/%Y %H:%M'))
-
 
     @classmethod
     def create(cls, **kwargs):
