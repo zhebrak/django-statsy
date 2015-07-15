@@ -29,7 +29,8 @@ def init_globals():
         'groups': Statsy.groups,
         'events': Statsy.events,
 
-        '_statsy': Statsy()
+        '_statsy': Statsy(),
+        'Statsy': Statsy
     })
 
     globals().update({
