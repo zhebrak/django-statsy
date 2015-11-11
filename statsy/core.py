@@ -110,7 +110,7 @@ class Statsy(object):
 
             if hasattr(self, clean_func):
                 cleaned_kwargs.update(
-                    getattr(self, clean_func)(cleaned_kwargs.pop(kwarg) or None)
+                    getattr(self, clean_func)(cleaned_kwargs.pop(kwarg))
                 )
 
         return cleaned_kwargs
@@ -119,13 +119,10 @@ class Statsy(object):
         return self._clean_kwargs(kwargs, clean_template='_clean_{0}_async')
 
     def _clean_value(self, value):
-        if not value:
-            return {
-                'value': None
-            }
+        _, cleaned_value = get_correct_value_field(value)
 
         return {
-            'value': get_correct_value_field(value)[1]
+            'value': cleaned_value
         }
 
     def _clean_user(self, user):
@@ -147,14 +144,17 @@ class Statsy(object):
         if not group:
             return {}
 
+        group_class = apps.get_model('statsy', 'StatsyGroup')
+        group = group[:group_class.NAME_LENGTH_LIMIT]
+
         if self.use_cache:
-            cache_key = apps.get_model('statsy', 'StatsyGroup').cache_key_string.format(group)
+            cache_key = group_class.cache_key_string.format(group)
             group = cache.setdefault(
                 cache_key,
                 lambda: self.groups.get_or_create(name=group)[0]
             )
         else:
-            group = self.groups.get_or_create(name=group)[0]
+            group, _ = self.groups.get_or_create(name=group)
 
         if group.is_active:
             return {
@@ -167,14 +167,17 @@ class Statsy(object):
         if not event:
             return {}
 
+        event_class = apps.get_model('statsy', 'StatsyEvent')
+        event = event[:event_class.NAME_LENGTH_LIMIT]
+
         if self.use_cache:
-            cache_key = apps.get_model('statsy', 'StatsyEvent').cache_key_string.format(event)
+            cache_key = event_class.cache_key_string.format(event)
             event = cache.setdefault(
                 cache_key,
                 lambda: self.events.get_or_create(name=event)[0]
             )
         else:
-            event = self.events.get_or_create(name=event)[0]
+            event, _ = self.events.get_or_create(name=event)
 
         if event.is_active:
             return {

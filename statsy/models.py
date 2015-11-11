@@ -15,8 +15,9 @@ from statsy.managers import StatsyGroupQuerySet, StatsyEventQuerySet, StatsyQuer
 
 class StatsyCategory(models.Model):
     """ Abstract base model for Group and Event """
+    NAME_LENGTH_LIMIT = 100
 
-    name = models.CharField(max_length=30, verbose_name='name')
+    name = models.CharField(max_length=NAME_LENGTH_LIMIT, unique=True, verbose_name='name')
     is_active = models.BooleanField(default=True, verbose_name='is active')
 
     class Meta:

@@ -13,7 +13,7 @@ class ValueDescriptor(object):
     def __get__(self, obj, objtype):
         for value_type in self.value_types:
             field_name = self.get_field_name(value_type)
-            if getattr(obj, field_name):
+            if getattr(obj, field_name) is not None:
                 return getattr(obj, field_name)
 
     def __set__(self, obj, value):

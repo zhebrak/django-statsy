@@ -30,8 +30,8 @@ def memoize(function):
 
 @memoize
 def get_correct_value_field(value):
-    if value is None:
-        return 'float_value', value
+    if value is None or value == 'None':
+        return 'float_value', None
 
     if isinstance(value, (float, int)) or (isinstance(value, str) and string_is_floatable(value)):
         return 'float_value', float(value)
@@ -42,4 +42,3 @@ def get_correct_value_field(value):
         pass
 
     return 'text_value', value
-
