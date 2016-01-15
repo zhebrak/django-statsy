@@ -5,13 +5,10 @@ from datetime import datetime
 from django.contrib.auth import get_user_model
 from django.db import models
 
-<<<<<<< Updated upstream
-=======
 import statsy
 
 from statsy.stats import Stats
 
->>>>>>> Stashed changes
 
 class StatsyBaseQuerySet(models.QuerySet):
     def active(self):
