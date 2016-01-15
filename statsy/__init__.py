@@ -10,7 +10,8 @@ from statsy.sites import site
 __all__ = [
     'send', 'watch', 'get_send_params'
     'objects', 'groups', 'events',
-    'site', 'autodiscover', 'logger'
+    'site', 'autodiscover', 'logger',
+    'stats'
 ]
 
 _statsy = Statsy()
@@ -31,6 +32,25 @@ def autodiscover():
 def init_signals():
     import statsy.signals
 
+
+def init_globals():
+    from statsy.core import Statsy
+    from statsy.stats import Stats
+
+    globals().update({
+        'objects': Statsy.objects,
+        'groups': Statsy.groups,
+        'events': Statsy.events,
+
+        '_statsy': Statsy(),
+        'Statsy': Statsy,
+    })
+
+    globals().update({
+        'send': _statsy.send,
+        'watch': _statsy.watch,
+        'get_send_params': _statsy.get_send_params
+    })
 
 default_app_config = 'statsy.apps.StatsyConfig'
 

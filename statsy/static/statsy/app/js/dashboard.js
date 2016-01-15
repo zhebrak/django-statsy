@@ -1,44 +1,46 @@
-var drawStats = function(dashboard, label, url) {
+function drawStats(dashboard, label, url) {
     $.get(url, {}, function(data) {
         var series = [];
         var stats;
         var timeData;
 
-        var today = new Date();
-        var year = today.getFullYear();
-        var month = today.getMonth();
+        var year, month, day, hour, minute, tmp;
 
-        var day, hour, minute, tmp;
+        stats = [];
+        for (timeData in data) {
+            tmp = data[timeData][0].split(':');
+            year = tmp[0];
+            month = tmp[1];
+            day = tmp[2];
+            hour = tmp[3];
+            minute = tmp[4];
 
-        for (var name in data) {
-            stats = [];
-            for (timeData in data[name]) {
-                tmp = data[name][timeData][0].split(':');
-                day = tmp[0];
-                hour = tmp[1];
-                minute = tmp[2];
-
-                stats.push(
-                    [
-                        Date.UTC(year, month, parseInt(day), parseInt(hour), parseInt(minute)),
-                        data[name][timeData][1]
-                    ]
-                )
-            }
-
-            series.push(
-                {
-                    'name': name,
-                    'data': stats
-                }
+            stats.push(
+                [
+                    Date.UTC(parseInt(year), parseInt(month), parseInt(day), parseInt(hour), parseInt(minute)),
+                    data[timeData][1]
+                ]
             )
         }
+
+        series.push(
+            {
+                'name': 'all stats',
+                'data': stats
+            }
+        );
+
+        console.log(stats);
 
         createChart(dashboard, series, label);
     })
 };
 
-var createChart = function(chart, series, label) {
+function addMinutes(date, minutes) {
+    return new Date(date.getTime() + minutes * 60000);
+}
+
+function createChart(chart, series, label) {
     chart.highcharts({
         chart: {
             type: 'spline'
@@ -62,8 +64,9 @@ var createChart = function(chart, series, label) {
             valueDecimals: 2,
             useHTML: true,
             formatter: function() {
-                return  '<table><tr><td>' + Highcharts.dateFormat('%A, %b %e, %H:%M ', new Date(this.x)) +'</td><tr/>' +
-                     '<td style="text-align: center;"><em style="display: inline-block; height:8px; width: 8px; border-radius: 50%; background-color:' + this.series.color +';"></em><span style="color:' + this.series.color + ';">  ' + this.series.name + '</span>: <b>' + this.y.toFixed(2) + '</b></td></table>';
+                var date = new Date(this.x);
+                return  '<table><tr><td>' + Highcharts.dateFormat('%A, %b %e, %H:%M — ', date) + Highcharts.dateFormat('%H:%M', addMinutes(date, 15)) + '</td><tr/>' +
+                     '<td style="text-align: center;"><em style="display: inline-block; height:8px; width: 8px; border-radius: 50%; background-color:' + this.series.color +';"></em><span style="color:' + this.series.color + ';">  ' + this.series.name + '</span>: <b>' + this.y.toFixed(2) + '</b> per min</td></table>';
             }
         },
         plotOptions: {
@@ -89,11 +92,8 @@ var createChart = function(chart, series, label) {
 
 
 $(function () {
-    var groupChart = $('#dashboardGroupContainer');
-    drawStats(groupChart, groupChart.attr('data-title'), groupChart.attr('data-url'));
-
-    var eventChart = $('#dashboardEventContainer');
-    drawStats(eventChart, eventChart.attr('data-title'), eventChart.attr('data-url'));
+    var todayChart = $('#dashboardTodayContainer');
+    drawStats(todayChart, todayChart.attr('data-title'), todayChart.attr('data-url'));
 
     $('.btn-group button').on('click', function() {
         var self = $(this);

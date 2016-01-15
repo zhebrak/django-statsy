@@ -1,6 +1,8 @@
-h1 {
-    margin-bottom: 30px !important;
+.statsy__header__today_count {
+    font-size: 18px;
+    vertical-align: top;
 }
+
 
 .statsy__last_stats {
     margin-top: 50px;

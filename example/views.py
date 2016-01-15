@@ -2,7 +2,7 @@
 
 import time
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from random import randint
 
 from django.shortcuts import render_to_response, get_object_or_404
@@ -53,16 +53,16 @@ class AboutView(WatchMixin, TemplateView):
 
 
 def populate_stats():
-    if statsy.objects.count() > 100000:
+    if statsy.objects.today().count() > 1000:
         return
 
-    start = time.mktime(datetime(year=2015, month=3, day=1).timetuple())
+    start = time.mktime((datetime.now() - timedelta(days=1)).timetuple())
     end = time.mktime(datetime.now().timetuple())
 
-    for _ in range(20000):
-        group = 'populated_{0}'.format(str(randint(1, 5)))
-        event = 'populated_{0}'.format(str(randint(1, 5)))
-        label = 'populated_{0}'.format(str(randint(1, 5)))
+    for _ in range(1000):
+        group = 'populated_{0}'.format(str(randint(0, 5)))
+        event = 'populated_{0}'.format(str(randint(0, 5)))
+        label = 'populated_{0}'.format(str(randint(0, 5)))
         timestamp = randint(start, end)
 
         statsy.send(

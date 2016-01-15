@@ -55,26 +55,9 @@ class StatsySite(object):
             url(r'^send/$', api.send, name='statsy.send'),
 
             url(r'^$', self.stats_view(views.dashboard), name='statsy.dashboard'),
-
             url(r'^custom/$', self.stats_view(views.custom), name='statsy.custom'),
+            url(r'^today/$', self.stats_view(views.today), name='statsy.today'),
 
-            url(
-                r'^today_category_stats/(?P<category>group|event)/$',
-                self.stats_view(views.get_today_category_stats),
-                name='statsy.today_category_stats'
-            ),
-
-            url(
-                r'^week_category_stats/(?P<category>group|event)/$',
-                self.stats_view(views.get_week_category_stats),
-                name='statsy.week_category_stats'
-            ),
-
-            url(
-                r'^month_category_stats/(?P<category>group|event)/$',
-                self.stats_view(views.get_month_category_stats),
-                name='statsy.month_category_stats'
-            ),
         )
 
         url_map = dict()
