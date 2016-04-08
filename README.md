@@ -2,7 +2,7 @@
 Django Statsy
 ========
 
-[![Build Status](https://travis-ci.org/fata1ex/django-statsy.svg)](https://travis-ci.org/fata1ex/django-statsy) [![Coverage Status](https://coveralls.io/repos/fata1ex/django-statsy/badge.svg)](https://coveralls.io/r/fata1ex/django-statsy) [![PyPI version](https://badge.fury.io/py/django-statsy.svg)](http://badge.fury.io/py/django-statsy)
+[![Build Status](https://travis-ci.org/zhebrak/django-statsy.svg)](https://travis-ci.org/zhebrak/django-statsy) [![Coverage Status](https://coveralls.io/repos/zhebrak/django-statsy/badge.svg)](https://coveralls.io/r/zhebrak/django-statsy) [![PyPI version](https://badge.fury.io/py/django-statsy.svg)](http://badge.fury.io/py/django-statsy)
 
 Statsy is an application for collecting and displaying statistics in your Django project.
 
