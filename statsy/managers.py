@@ -3,6 +3,7 @@
 from datetime import datetime
 
 from django.contrib.auth import get_user_model
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
 import statsy
@@ -103,3 +104,9 @@ class StatsyQuerySet(models.QuerySet):
 
     def _text(self):
         return self.exclude(text_value=None)
+
+    def for_object(self, obj):
+        return self.filter(
+            object_id=obj.pk,
+            content_type_id=ContentType.objects.get_for_model(obj.__class__.__name__)
+        )

@@ -19,4 +19,15 @@ else:
 
 @app.task
 def send(**kwargs):
-    StatsyObject.create(**kwargs)
+    obj = StatsyObject.create(**kwargs)
+
+    return obj.serialize()
+
+
+@app.task
+def send_callback(result, callback_path):
+    module, callback = callback_path.rsplit('.', 1)
+    module = importlib.import_module(module)
+    callback = getattr(module, callback)
+
+    return callback(result)

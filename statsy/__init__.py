@@ -2,9 +2,11 @@
 
 from django.utils.module_loading import autodiscover_modules
 
-from statsy.core import Statsy
 from statsy.log import logger
 from statsy.sites import site
+
+
+default_app_config = 'statsy.apps.StatsyConfig'
 
 
 __all__ = [
@@ -13,16 +15,6 @@ __all__ = [
     'site', 'autodiscover', 'logger',
     'stats'
 ]
-
-_statsy = Statsy()
-
-send = _statsy.send
-watch = _statsy.watch
-get_send_params = _statsy.get_send_params
-
-objects = Statsy.objects
-groups = Statsy.groups
-events = Statsy.events
 
 
 def autodiscover():
@@ -33,24 +25,25 @@ def init_signals():
     import statsy.signals
 
 
-def init_globals():
+def init_shortcuts():
     from statsy.core import Statsy
     from statsy.stats import Stats
 
+    _statsy = Statsy()
+
     globals().update({
+        'Statsy': Statsy,
+
         'objects': Statsy.objects,
         'groups': Statsy.groups,
         'events': Statsy.events,
 
-        '_statsy': Statsy(),
-        'Statsy': Statsy,
+        '_statsy': _statsy,
     })
 
     globals().update({
         'send': _statsy.send,
         'watch': _statsy.watch,
+
         'get_send_params': _statsy.get_send_params
     })
-
-default_app_config = 'statsy.apps.StatsyConfig'
-

@@ -6,6 +6,7 @@ from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.utils.encoding import python_2_unicode_compatible
 
 from jsonfield import JSONField
 
@@ -13,6 +14,7 @@ from statsy.descriptors import ValueDescriptor
 from statsy.managers import StatsyGroupQuerySet, StatsyEventQuerySet, StatsyQuerySet
 
 
+@python_2_unicode_compatible
 class StatsyCategory(models.Model):
     """ Abstract base model for Group and Event """
 
@@ -22,7 +24,7 @@ class StatsyCategory(models.Model):
     class Meta:
         abstract = True
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     @property
@@ -58,6 +60,7 @@ class StatsyEvent(StatsyCategory):
         verbose_name_plural = 'Statsy Events'
 
 
+@python_2_unicode_compatible
 class StatsyObject(models.Model):
     group = models.ForeignKey(
         StatsyGroup, blank=True, null=True,
@@ -95,12 +98,15 @@ class StatsyObject(models.Model):
     class Meta:
         verbose_name = 'Statsy Object'
         verbose_name_plural = 'Statsy Objects'
+
+        index_together = ['content_type', 'object_id', 'user']
         ordering = ('-created_at',)
+
         permissions = (
             ('stats_view', 'Can view stats'),
         )
 
-    def __unicode__(self):
+    def __str__(self):
         if self.label:
             return '{0}:{1}:{2} {3}'.format(
                 self.group, self.event, self.label,
@@ -108,7 +114,6 @@ class StatsyObject(models.Model):
             )
 
         return '{0}:{1} {2}'.format(self.group, self.event, self.created_at.strftime('%d/%m/%Y %H:%M'))
-
 
     @classmethod
     def create(cls, **kwargs):
@@ -122,3 +127,20 @@ class StatsyObject(models.Model):
         new_object.save()
 
         return new_object
+
+    def serialize(self):
+        return {
+            'id': self.pk,
+            'group_id': self.group_id,
+            'event_id': self.event_id,
+            'user_id': self.user_id,
+            'label': self.label,
+            'content_type_id': self.content_type_id,
+            'object_id': self.object_id,
+            'created_at': self.created_at,
+            'value': self.value,
+            'url': self.url,
+            'duration': self.duration,
+            'extra': self.extra
+        }
+

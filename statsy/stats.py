@@ -38,7 +38,7 @@ class Stats(object):
 
     @staticmethod
     def _annotate_with_time(object_list):
-        time_extract_sqlite = "strftime('%Y:%m:%d:%H:%M', created_at)"
+        time_extract_sqlite = "strftime('%%Y:%%m:%%d:%%H:%%M', created_at)"
         time_extract_mysql = "DATE_FORMAT(created_at, '%%Y:%%m:%%d:%%H:%%i')"
 
         time_extract = time_extract_mysql
@@ -63,7 +63,7 @@ class Stats(object):
 
             aggregated_stats[aggregated_time].append(obj)
 
-        return aggregated_stats.iteritems(), aggregation_period
+        return aggregated_stats.items(), aggregation_period
 
         # now = datetime.now()
         #
@@ -133,10 +133,10 @@ class Stats(object):
     @staticmethod
     def _get_aggregated_time(time_string, aggregation_period):
         year, month, day, hours, minutes = time_string.split(':')
-        aggregated_minutes = int(float(hours) * 60 + float(minutes)) / aggregation_period
+        aggregated_minutes = int(float(hours) * 60 + float(minutes)) // aggregation_period
 
         day = ('0' + day)[-2:]
-        hours = ('0' + str(aggregated_minutes * aggregation_period / 60))[-2:]
+        hours = ('0' + str(aggregated_minutes * aggregation_period // 60))[-2:]
         minutes = ('0' + str((aggregated_minutes * aggregation_period) % 60))[-2:]
 
         return ':'.join([year, month, day, hours, minutes])

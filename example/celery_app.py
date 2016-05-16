@@ -8,6 +8,6 @@ from django.conf import settings
 
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'example.settings')
-app = Celery('example')
+app = Celery('example', broker=settings.BROKER_URL)
 
 app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)

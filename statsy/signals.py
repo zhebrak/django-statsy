@@ -1,5 +1,6 @@
 # coding: utf-8
 
+from django.apps import apps
 from django.db.models.signals import post_save, post_delete
 
 from statsy.cache import cache
