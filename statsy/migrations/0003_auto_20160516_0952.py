@@ -23,6 +23,6 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterIndexTogether(
             name='statsyobject',
-            index_together=set([('content_type', 'object_id')]),
+            index_together=set([('content_type', 'object_id', 'user')]),
         ),
     ]
