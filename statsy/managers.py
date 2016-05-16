@@ -3,9 +3,12 @@
 from datetime import datetime
 
 from django.contrib.auth import get_user_model
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
 import statsy
+
+from statsy.stats import Stats
 
 
 class StatsyBaseQuerySet(models.QuerySet):
@@ -23,6 +26,9 @@ class StatsyEventQuerySet(StatsyBaseQuerySet):
 
 class StatsyQuerySet(models.QuerySet):
     def by_group(self, group):
+        if not group:
+            return self
+
         if isinstance(group, str):
             group_id = statsy.groups.get(name=group).id
 
@@ -32,6 +38,9 @@ class StatsyQuerySet(models.QuerySet):
         return self.filter(group_id=group_id)
 
     def by_event(self, event):
+        if not event:
+            return self
+
         if isinstance(event, str):
             event_id = statsy.events.get(name=event).id
 
@@ -39,6 +48,9 @@ class StatsyQuerySet(models.QuerySet):
             event_id = event
 
         return self.filter(event_id=event_id)
+
+    def by_category(self, category_type, category):
+        return getattr(self, 'by_{}'.format(category_type))(category)
 
     def by_user(self, user):
         if isinstance(user, get_user_model()):
@@ -51,6 +63,9 @@ class StatsyQuerySet(models.QuerySet):
             return self.select_related('user').filter(user__username=user)
 
     def by_label(self, label):
+        if not label:
+            return self
+
         return self.filter(label=label)
 
     def by_time(self, start=None, end=None, include_start=True, include_end=True):
@@ -73,3 +88,25 @@ class StatsyQuerySet(models.QuerySet):
 
     def active(self):
         return self.select_related('group', 'event').filter(group__is_active=True, event__is_active=True)
+
+    def fetch(self, mask):
+        group, event, label = mask.split(':')
+        return self.by_group(group).by_event(event).by_label(label)
+
+    def get_stats(self):
+        return Stats.get_stats(self)
+
+    def _numbers(self):
+        return self.exclude(float_value=None)
+
+    def _action(self):
+        return self.filter(float_value=None, text_value=None)
+
+    def _text(self):
+        return self.exclude(text_value=None)
+
+    def for_object(self, obj):
+        return self.filter(
+            object_id=obj.pk,
+            content_type_id=ContentType.objects.get_for_model(obj.__class__.__name__)
+        )

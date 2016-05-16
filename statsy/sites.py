@@ -49,33 +49,15 @@ class StatsySite(object):
         return update_wrapper(inner, view)
 
     def get_urls(self):
-        from django.conf.urls import patterns, url
+        from django.conf.urls import url
 
-        urlpatterns = patterns('',
+        urlpatterns = [
             url(r'^send/$', api.send, name='statsy.send'),
 
             url(r'^$', self.stats_view(views.dashboard), name='statsy.dashboard'),
-
             url(r'^custom/$', self.stats_view(views.custom), name='statsy.custom'),
-
-            url(
-                r'^today_category_stats/(?P<category>group|event)/$',
-                self.stats_view(views.get_today_category_stats),
-                name='statsy.today_category_stats'
-            ),
-
-            url(
-                r'^week_category_stats/(?P<category>group|event)/$',
-                self.stats_view(views.get_week_category_stats),
-                name='statsy.week_category_stats'
-            ),
-
-            url(
-                r'^month_category_stats/(?P<category>group|event)/$',
-                self.stats_view(views.get_month_category_stats),
-                name='statsy.month_category_stats'
-            ),
-        )
+            url(r'^today/$', self.stats_view(views.today), name='statsy.today'),
+        ]
 
         url_map = dict()
         for view_name, (view, _, permission) in self._registry.items():
@@ -86,7 +68,7 @@ class StatsySite(object):
             if permission:
                 stats_view = permission_required(permission)(stats_view)
 
-            urlpatterns += patterns('',
+            urlpatterns.append(
                 url(r'^custom/{0}/'.format(url_part), stats_view, name=url_name)
             )
 

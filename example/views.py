@@ -2,7 +2,7 @@
 
 import time
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from random import randint
 
 from django.shortcuts import render_to_response, get_object_or_404
@@ -12,13 +12,20 @@ from django.template import RequestContext
 from django.views.generic import TemplateView
 
 from example.models import Post
+from example.tasks import sample_callback_task
 
 import statsy
 
 from statsy.mixins import WatchMixin
 
 
-@statsy.watch(group='index', event='page_view', value='123.1')
+def sample_callback(_):
+    statsy.send(
+        extra='I\'m the pure callback'
+    )
+
+
+@statsy.watch(group='index', event='page_view', value='123.1', callback=sample_callback)
 def index(request):
     populate_stats()
 
@@ -34,7 +41,7 @@ def get_post(request, post_id):
 
     statsy.send(
         group='post', event='page_view', user=request.user,
-        url=request.path, content_object=post
+        url=request.path, content_object=post, callback=sample_callback_task
     )
 
     context = {
@@ -53,16 +60,16 @@ class AboutView(WatchMixin, TemplateView):
 
 
 def populate_stats():
-    if statsy.objects.count() > 10000:
+    if statsy.objects.today().count() > 1000:
         return
 
-    start = time.mktime(datetime(year=2015, month=2, day=1).timetuple())
+    start = time.mktime((datetime.now() - timedelta(days=1)).timetuple())
     end = time.mktime(datetime.now().timetuple())
 
-    for _ in range(20000):
-        group = 'populated_{0}'.format(str(randint(1, 5)))
-        event = 'populated_{0}'.format(str(randint(1, 5)))
-        label = 'populated_{0}'.format(str(randint(1, 5)))
+    for _ in range(1000):
+        group = 'populated_{0}'.format(str(randint(0, 5)))
+        event = 'populated_{0}'.format(str(randint(0, 5)))
+        label = 'populated_{0}'.format(str(randint(0, 5)))
         timestamp = randint(start, end)
 
         statsy.send(

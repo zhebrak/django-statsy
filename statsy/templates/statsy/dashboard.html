@@ -11,50 +11,25 @@
 {% endblock %}
 
 {% block content %}
-    <h1>Overview</h1>
+    <h1>Overview <span class='statsy__header__today_count'>{{ today_count }} stats today</span></h1>
+
+    <div class="statsy__chart">
+        <div id="dashboardTodayContainer" data-url="{% url 'statsy.today' %}" data-title="Stats count for today"></div>
+    </div>
+
     <div class="row">
-        <div class="statsy__chart_container">
-            <div class="btn-group statsy__group_period" role="group" aria-label="Group stats period" data-chart="dashboardGroupContainer">
-              <button type="button" class="btn btn-default active" data-url="{% url 'statsy.today_category_stats' 'group' %}">Day</button>
-              <button type="button" class="btn btn-default" data-url="{% url 'statsy.week_category_stats' 'group' %}">Week</button>
-              <button type="button" class="btn btn-default" data-url="{% url 'statsy.month_category_stats' 'group' %}">Month</button>
-            </div>
-
-            <div class="statsy__chart">
-                <div id="dashboardGroupContainer" data-url="{% url 'statsy.today_category_stats' 'group' %}" data-title="Count per Group"></div>
-            </div>
-
-            <div class="statsy__group_list">
+        <div class="statsy__group_list">
             Groups:
             {% for group in groups %}
                 <div class="statsy__group">
                     <a href="#">{{ group }}</a>
                 </div>
             {% endfor %}
-            </div>
         </div>
+    </div>
 
-        <div class="statsy__chart_container">
-            <div class="btn-group statsy__event_period" role="group" aria-label="Event stats period" data-chart="dashboardEventContainer">
-              <button type="button" class="btn btn-default active" data-url="{% url 'statsy.today_category_stats' 'event' %}">Day</button>
-              <button type="button" class="btn btn-default" data-url="{% url 'statsy.week_category_stats' 'event' %}">Week</button>
-              <button type="button" class="btn btn-default" data-url="{% url 'statsy.month_category_stats' 'event' %}">Month</button>
-            </div>
 
-            <div class="statsy__chart">
-                <div id="dashboardEventContainer" data-url="{% url 'statsy.today_category_stats' 'event' %}" data-title="Count per Event"></div>
-            </div>
-
-            <div class="statsy__event_list">
-            Events:
-            {% for event in events %}
-                <div class="statsy__event">
-                    <a href="#">{{ event }}</a>
-                </div>
-            {% endfor %}
-            </div>
-        </div>
-
+    <div class="row">
         <div class="statsy__last_stats">
             <table class="table table-hover">
                 <thead>

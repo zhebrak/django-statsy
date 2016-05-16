@@ -1,12 +1,13 @@
 # coding: utf-8
 
 import os
+
+
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 SECRET_KEY = 'u%fk(_dcx=zl_wz@5u#tw9sw*h58848luyf7jzbi^u%_%vbi_v'
 
 DEBUG = True
-TEMPLATE_DEBUG = DEBUG
 
 ALLOWED_HOSTS = ['*']
 
@@ -20,7 +21,8 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # 'djcelery',
+    # 'celery',
+
     'statsy',
     'tests',
     'example'
@@ -53,17 +55,25 @@ STATICFILES_FINDERS = (
     "django.contrib.staticfiles.finders.AppDirectoriesFinder"
 )
 
-TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
-)
-
-TEMPLATE_CONTEXT_PROCESSORS = (
-    'django.contrib.auth.context_processors.auth',
-    'django.core.context_processors.csrf',
-)
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.csrf',
+            ],
+            'debug': DEBUG
+        },
+    },
+]
 
 CELERY_APP = 'example.celery_app.app'
+BROKER_URL = 'redis://localhost:6379/0'
+
+STATSY_ASYNC = False
 
 try:
     from local_settings import *

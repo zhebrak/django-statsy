@@ -5,26 +5,26 @@ import time
 from datetime import datetime
 from functools import wraps
 
-from django.apps import apps
 from django.contrib.contenttypes.models import ContentType
 
 from statsy.cache import cache
 from statsy.exceptions import StatsyException, StatsyDisabled
+from statsy.helpers import get_correct_value_field
+from statsy.models import StatsyObject, StatsyGroup, StatsyEvent
+from statsy.settings import ASYNC
+
 
 try:
-    from statsy.tasks import send as send_task
+    from statsy.tasks import send as send_task, send_callback
 except ImportError:
-    send_task = None
-
-from statsy.settings import ASYNC
-from statsy.helpers import get_correct_value_field
+    send_task, send_callback = None, None
 
 
 class Statsy(object):
     _send_params = [
         'group', 'event', 'label', 'user', 'user_id'
         'content_object', 'object_id', 'content_type_id',
-        'value', 'url', 'duration', 'extra'
+        'value', 'url', 'duration', 'extra', 'callback'
     ]
 
     def __init__(self, async=True, cache=True):
@@ -42,7 +42,7 @@ class Statsy(object):
         """
         raise NotImplemented
 
-    def watch(self, group=None, event=None, value=None, label=None):
+    def watch(self, group=None, event=None, value=None, label=None, callback=None):
         watch_with_params = True
         if callable(value):
             watch_with_params = False
@@ -60,7 +60,8 @@ class Statsy(object):
                 if watch_with_params:
                     self.send(
                         group=group, event=event, label=label, user=user,
-                        value=value, url=request.path, duration=duration
+                        value=value, url=request.path, duration=duration,
+                        callback=callback
                     )
                 else:
                     self.send(user=user, url=request.path, duration=duration)
@@ -76,7 +77,14 @@ class Statsy(object):
 
     def _send(self, **kwargs):
         try:
-            apps.get_model('statsy', 'StatsyObject').create(**self._clean_kwargs(kwargs))
+            callback = kwargs.get('callback')
+            result = StatsyObject.create(**self._clean_kwargs(kwargs))
+
+            if callback:
+                return callback(result)
+
+            return result
+
         except StatsyDisabled:
             pass
 
@@ -88,13 +96,21 @@ class Statsy(object):
             kwargs['created_at'] = datetime.now()
 
         try:
-            send_task.delay(**self._clean_kwargs_async(kwargs))
+            callback = kwargs.get('callback')
+            if callback:
+                try:
+                    callback = callback.s()
+                except AttributeError:
+                    path = '.'.join([callback.__module__, callback.__name__])
+                    callback = send_callback.s(path)
+
+            return send_task.apply_async(kwargs=self._clean_kwargs_async(kwargs), link=callback)
 
         except StatsyDisabled:
             pass
 
         except StatsyException:
-            self._send(**kwargs)
+            return self._send(**kwargs)
 
     def _clean_kwargs(self, kwargs, clean_template=None):
         cleaned_kwargs = kwargs.copy()
@@ -117,6 +133,9 @@ class Statsy(object):
 
     def _clean_kwargs_async(self, kwargs):
         return self._clean_kwargs(kwargs, clean_template='_clean_{0}_async')
+
+    def _clean_callback(self, _):
+        return {}
 
     def _clean_value(self, value):
         _, cleaned_value = get_correct_value_field(value)
@@ -144,11 +163,10 @@ class Statsy(object):
         if not group:
             return {}
 
-        group_class = apps.get_model('statsy', 'StatsyGroup')
-        group = group[:group_class.NAME_LENGTH_LIMIT]
+        group = group[:StatsyGroup.NAME_LENGTH_LIMIT]
 
         if self.use_cache:
-            cache_key = group_class.cache_key_string.format(group)
+            cache_key = StatsyGroup.cache_key_string.format(group)
             group = cache.setdefault(
                 cache_key,
                 lambda: self.groups.get_or_create(name=group)[0]
@@ -167,11 +185,10 @@ class Statsy(object):
         if not event:
             return {}
 
-        event_class = apps.get_model('statsy', 'StatsyEvent')
-        event = event[:event_class.NAME_LENGTH_LIMIT]
+        event = event[:StatsyEvent.NAME_LENGTH_LIMIT]
 
         if self.use_cache:
-            cache_key = event_class.cache_key_string.format(event)
+            cache_key = StatsyEvent.cache_key_string.format(event)
             event = cache.setdefault(
                 cache_key,
                 lambda: self.events.get_or_create(name=event)[0]
@@ -195,6 +212,6 @@ class Statsy(object):
     def get_send_params(self):
         return self._send_params
 
-    objects = apps.get_model('statsy', 'StatsyObject').objects
-    groups = apps.get_model('statsy', 'StatsyGroup').objects
-    events = apps.get_model('statsy', 'StatsyEvent').objects
+    objects = StatsyObject.objects
+    groups = StatsyGroup.objects
+    events = StatsyEvent.objects
