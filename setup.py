@@ -29,7 +29,7 @@ setup(
     author='Alexander Zhebrak',
     author_email='fata2ex@gmail.com',
     license='MIT',
-    url='https://github.com/fata1ex/django-statsy',
+    url='https://github.com/zhebrak/django-statsy',
     download_url='https://pypi.python.org/pypi/django-statsy',
     keywords=['django', 'statistics', 'analytics'],
     install_requires=install_requires,

@@ -106,9 +106,6 @@ class StatsyObject(models.Model):
         permissions = (
             ('stats_view', 'Can view stats'),
         )
-        index_together = [
-            ("content_type", "object_id"),
-        ]
 
     def __str__(self):
         if self.label:
