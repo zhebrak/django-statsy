@@ -2,11 +2,15 @@
 
 import statsy
 
-from example.celery_app import app
+try:
+    from example.celery_app import app
 
 
-@app.task
-def sample_callback_task(_):
-    statsy.send(
-        extra='I\'m the task callback'
-    )
+    @app.task
+    def sample_callback_task(_):
+        statsy.send(
+            extra='I\'m the task callback'
+        )
+
+except ImportError:
+    pass
