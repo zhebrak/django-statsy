@@ -32,7 +32,7 @@ class ChangeListWithoutPkOrdering(ChangeList):
 
 class StatsyObjectAdmin(admin.ModelAdmin):
     list_display = ('__str__', 'user', 'object_value', 'duration', 'url')
-    search_fields = ('user__username', 'value', 'url')
+    search_fields = ('user__username', 'text_value', 'url')
     list_filter = ('group__name', 'event__name', 'label')
     date_hierarchy = 'created_at'
     list_select_related = ('group', 'event', 'user')

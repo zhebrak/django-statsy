@@ -81,7 +81,7 @@ class Statsy(object):
             result = StatsyObject.create(**self._clean_kwargs(kwargs))
 
             if callback:
-                return callback(result)
+                return callback(result.serialize())
 
             return result
 
