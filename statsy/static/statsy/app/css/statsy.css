@@ -1,32 +1,10 @@
+h1 {
+    margin-bottom: 30px !important;
+}
+
 .statsy__header__today_count {
     font-size: 18px;
     vertical-align: top;
-}
-
-
-.statsy__last_stats {
-    margin-top: 50px;
-    text-align: center;
-    padding: 20px;
-}
-
-.statsy__last_stats table {
-    margin-top: 20px;
-    text-align: left;
-}
-
-.statsy__last_stats__header {
-    font-size: 18px;
-
-}
-
-.statsy__group_period, .statsy__event_period {
-    margin: 0 20px 30px 0;
-    float: right;
-}
-
-.btn.active.focus, .btn.active:focus, .btn.focus, .btn:active.focus, .btn:active:focus, .btn:focus {
-    outline: none !important;
 }
 
 .statsy__chart_container {
@@ -38,14 +16,31 @@
     margin-bottom: 30px;
 }
 
-.statsy__group_list, .statsy__event_list {
-    margin-right: 20px;
-    line-height: 50px;
+.lazy-load {
+    display: none;
 }
 
-.statsy__group, .statsy__event {
-    display: inline;
-    margin-left: 10px;
+.statsy__filter {
+    height: 30px;
+}
+
+.statsy__group_list .select2-container, .statsy__event_list .select2-container {
+    width: 100% !important;
+}
+
+.statsy__date_filter input {
+    width: 100%;
+    border-radius: 5px;
+    border-width: 1px;
+    border-color: #AAAAAA;
+    border-style: solid;
+    height: 32px;
+    padding: 5px;
+    width: 138px;
+}
+
+.statsy__date_filter {
+    text-align: right;
 }
 
 #dahboardGroupContainer {

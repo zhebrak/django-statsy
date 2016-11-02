@@ -8,6 +8,8 @@ from django.conf import settings
 
 class Stats(object):
     DEFAULT_CATEGORY_CLASS = 'mixed'
+    NO_DATA_CATEGORY_CLASS = 'no_data'
+
     DECISION_THRESHOLD = 0.95
 
     category_class_list = ['numbers', 'action', 'text']
@@ -15,6 +17,9 @@ class Stats(object):
     @classmethod
     def classify(cls, object_list):
         object_list_count = object_list.count()
+        if not object_list_count:
+            return cls.NO_DATA_CATEGORY_CLASS
+
         for category_class in cls.category_class_list:
             category_count = getattr(object_list, '_{}'.format(category_class))().count()
             if cls.DECISION_THRESHOLD < category_count / float(object_list_count):
@@ -26,6 +31,8 @@ class Stats(object):
     def get_stats(cls, object_list, aggregation_period='auto', category_class='auto'):
         if category_class == 'auto':
             category_class = cls.classify(object_list)
+            if category_class == cls.NO_DATA_CATEGORY_CLASS:
+                return []
 
         return sorted(cls._stats(object_list, category_class, aggregation_period), key=itemgetter(0))
 
@@ -46,7 +53,7 @@ class Stats(object):
             time_extract = time_extract_sqlite
 
         return object_list.extra({"time": time_extract}).values(
-                'time', 'float_value', 'text_value'
+            'time', 'float_value', 'text_value'
         )
 
     @classmethod
@@ -107,7 +114,7 @@ class Stats(object):
         # return aggregated_stats
 
     @classmethod
-    def stats_numbers(cls, data):
+    def stats_numbers(cls, data, period):
         return cls.stats_average(data, 'float_value')
 
     @classmethod
@@ -141,24 +148,26 @@ class Stats(object):
 
         return ':'.join([year, month, day, hours, minutes])
 
-    @staticmethod
-    def _get_aggregation_period(data):
+    @classmethod
+    def _get_aggregation_period(cls, data):
         sorted_data = sorted(data, key=lambda item: item['time'])
         start = datetime.strptime(sorted_data[0]['time'], '%Y:%m:%d:%H:%M')
         end = datetime.strptime(sorted_data[-1]['time'], '%Y:%m:%d:%H:%M')
 
-        period_in_days = (end - start).days
+        return cls.get_aggregation_period_for_days((end - start).days)
 
-        if period_in_days <= 2:
+    @staticmethod
+    def get_aggregation_period_for_days(days):
+        if days <= 2:
             return 15  # aggregate by 15 minutes
 
-        if period_in_days <= 10:
+        if days <= 10:
             return 90
 
-        if period_in_days <= 50:
+        if days <= 50:
             return 6 * 60
 
-        if period_in_days <= 150:
+        if days <= 150:
             return 12 * 60
 
         return 24 * 60

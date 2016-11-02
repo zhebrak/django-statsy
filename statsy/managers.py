@@ -32,7 +32,7 @@ class StatsyQuerySet(models.QuerySet):
         if isinstance(group, str):
             group_id = statsy.groups.get(name=group).id
 
-        elif isinstance(group, int):
+        elif isinstance(group, (int, long)):
             group_id = group
 
         return self.filter(group_id=group_id)
@@ -44,7 +44,7 @@ class StatsyQuerySet(models.QuerySet):
         if isinstance(event, str):
             event_id = statsy.events.get(name=event).id
 
-        elif isinstance(event, int):
+        elif isinstance(event, (int, long)):
             event_id = event
 
         return self.filter(event_id=event_id)

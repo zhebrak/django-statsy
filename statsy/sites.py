@@ -55,6 +55,7 @@ class StatsySite(object):
             url(r'^send/$', api.send, name='statsy.send'),
 
             url(r'^$', self.stats_view(views.dashboard), name='statsy.dashboard'),
+            url(r'^get_stats/$', self.stats_view(views.get_stats), name='statsy.get_stats'),
             url(r'^custom/$', self.stats_view(views.custom), name='statsy.custom'),
             url(r'^today/$', self.stats_view(views.today), name='statsy.today'),
         ]

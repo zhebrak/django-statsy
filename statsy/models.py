@@ -138,10 +138,9 @@ class StatsyObject(models.Model):
             'label': self.label,
             'content_type_id': self.content_type_id,
             'object_id': self.object_id,
-            'created_at': self.created_at,
+            'created_at': self.created_at.strftime('%Y-%m-%d %H:%M:%S'),
             'value': self.value,
             'url': self.url,
             'duration': self.duration,
             'extra': self.extra
         }
-

@@ -38,6 +38,8 @@ def init_shortcuts():
         'groups': Statsy.groups,
         'events': Statsy.events,
 
+        'stats': Stats,
+
         '_statsy': _statsy,
     })
 

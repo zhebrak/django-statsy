@@ -3,7 +3,16 @@
 {% load static from staticfiles %}
 
 {% block script %}
+    <link href="{% static 'statsy/libs/select2/css/select2.min.css' %}" rel="stylesheet">
+    <link href="{% static 'statsy/libs/daterangepicker/daterangepicker.css' %}" rel="stylesheet">
+
+    <script src="{% static 'statsy/libs/highcharts/js/highcharts.js' %}"></script>
+    <script src="{% static 'statsy/libs/select2/js/select2.min.js' %}"></script>
+
     <script src="{% static 'statsy/app/js/dashboard.js' %}"></script>
+
+    <script src="{% static 'statsy/libs/moment/moment.js' %}"></script>
+    <script src="{% static 'statsy/libs/daterangepicker/daterangepicker.js' %}"></script>
 {% endblock %}
 
 {% block title %}
@@ -13,50 +22,32 @@
 {% block content %}
     <h1>Overview <span class='statsy__header__today_count'>{{ today_count }} stats today</span></h1>
 
-    <div class="statsy__chart">
-        <div id="dashboardTodayContainer" data-url="{% url 'statsy.today' %}" data-title="Stats count for today"></div>
-    </div>
-
-    <div class="row">
-        <div class="statsy__group_list">
-            Groups:
-            {% for group in groups %}
-                <div class="statsy__group">
-                    <a href="#">{{ group }}</a>
-                </div>
-            {% endfor %}
+    <div class="row statsy__filter lazy-load">
+        {% if groups %}
+            <div class="statsy__group_list col-md-4">
+                <select class="statsy__group_select" data-placeholder='Filter groups' multiple="multiple">
+                    {% for group in groups %}
+                        <option value="{{ group }}">{{ group }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        {% endif %}
+        <div class="statsy__event_list col-md-4">
+            <select class="statsy__event_select" data-placeholder='Filter events' multiple="multiple">
+                {% for event in events %}
+                    <option value="{{ event }}">{{ event }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="statsy__date_filter pull-right col-md-2">
+            <input type="text" name='daterange'/>
         </div>
     </div>
-
+    <hr/>
 
     <div class="row">
-        <div class="statsy__last_stats">
-            <table class="table table-hover">
-                <thead>
-                    <span class="statsy__last_stats__header">Most recent stats</span>
-                    <th>Group</th>
-                    <th>Event</th>
-                    <th>Label</th>
-                    <th>Value</th>
-                    <th>Time</th>
-                </thead>
-                <tbody>
-                    {% for stats in last_stats %}
-                        <tr>
-
-                            <td>{{ stats.group }}</td>
-                            <td>{{ stats.event }}</td>
-                            <td>{% if stats.label %}{{ stats.label }}{% endif %}</td>
-                            <td>{% if stats.value %}{{ stats.value }}{% endif %}</td>
-                            <td>{{ stats.created_at|date:"H:i:s" }}</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-
-                <tfoot>
-                    <td colspan="4">...</td>
-                </tfoot>
-            </table>
+        <div class="statsy__chart">
+            <div id="dashboardTodayContainer" data-url="{% url 'statsy.today' %}" data-title="Stats count for today"></div>
         </div>
     </div>
 {% endblock %}

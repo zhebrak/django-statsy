@@ -1,14 +1,21 @@
-function drawStats(dashboard, label, url) {
+function getStats(url, callback) {
     $.get(url, {}, function(data) {
-        var series = [];
-        var stats;
-        var timeData;
+        callback(data);
+    })
+}
 
-        var year, month, day, hour, minute, tmp;
 
+function drawStats(dashboard, label, data, aggr_period) {
+    var series = [];
+    var stats;
+    var timeData;
+
+    var year, month, day, hour, minute, tmp;
+
+    data.forEach(function(stats_data) {
         stats = [];
-        for (timeData in data) {
-            tmp = data[timeData][0].split(':');
+        for (timeData in stats_data.data) {
+            tmp = stats_data.data[timeData][0].split(':');
             year = tmp[0];
             month = tmp[1];
             day = tmp[2];
@@ -17,30 +24,29 @@ function drawStats(dashboard, label, url) {
 
             stats.push(
                 [
-                    Date.UTC(parseInt(year), parseInt(month), parseInt(day), parseInt(hour), parseInt(minute)),
-                    data[timeData][1]
+                    Date.UTC(parseInt(year), parseInt(month) - 1, parseInt(day), parseInt(hour), parseInt(minute)),
+                    stats_data.data[timeData][1]
                 ]
             )
         }
 
         series.push(
             {
-                'name': 'all stats',
+                'name': stats_data.name,
                 'data': stats
             }
         );
+    });
 
-        console.log(stats);
 
-        createChart(dashboard, series, label);
-    })
+    createChart(dashboard, series, label, aggr_period);
 };
 
 function addMinutes(date, minutes) {
     return new Date(date.getTime() + minutes * 60000);
 }
 
-function createChart(chart, series, label) {
+function createChart(chart, series, label, aggr_period) {
     chart.highcharts({
         chart: {
             type: 'spline'
@@ -56,7 +62,7 @@ function createChart(chart, series, label) {
         },
         yAxis: {
             title: {
-                text: 'Count (15 min)'
+                text: 'Average in ' + aggr_period + ' min'
             },
             min: 0
         },
@@ -92,21 +98,80 @@ function createChart(chart, series, label) {
 
 
 $(function () {
-    var todayChart = $('#dashboardTodayContainer');
-    drawStats(todayChart, todayChart.attr('data-title'), todayChart.attr('data-url'));
+    var chart = $('#dashboardTodayContainer');
+    getStats(chart.attr('data-url'), function(data) {
+        drawStats(chart, chart.attr('data-title'), data.stats, data.aggregation_period);
+    })
 
-    $('.btn-group button').on('click', function() {
-        var self = $(this);
-        if ( ! self.hasClass('active') ) {
-            self.parent().find('.btn-default').removeClass('active');
-            self.addClass('active');
+    $('.statsy__group_select, .statsy__event_select').each(function() {
+        if ($(this).find('option').length) {
+            $(this).select2({
+                placeholder: $(this).data('placeholder')
+            })
+        } else {
+            $(this).css('display', 'none');
+        }
+    });
 
-            var chart = $('#' + self.parent().attr('data-chart'));
-            drawStats(chart, chart.attr('data-title'), self.attr('data-url'));
+    $('.statsy__date_select').select2();
+    $('input[name="daterange"]').daterangepicker({
+        "opens": "left",
+        locale: {
+            format: 'DD/MM/YY',
+            "firstDay": 1
+        }
+    });
+
+    $('.lazy-load').css('display', 'block');
+
+    var lastLoad = moment().unix();
+    $('.statsy__group_select, .statsy__event_select').on('change', function() {
+        if (moment().unix() - lastLoad <= 1) {
+            return false;
         }
 
-        return false;
+        var groups = $('.statsy__group_select').val();
+        var events = $('.statsy__event_select').val();
+
+        var interval = $('input[name="daterange"]').val().split(' - ')
+
+        var data = {
+            'groups': groups,
+            'events': events,
+            'start': interval[0],
+            'end': interval[1]
+        }
+        $.get('/stats/get_stats/', data, function(data) {
+            if (data.events && groups.length) {
+                currentOptions = [];
+                $('.statsy__event_select').find('option').each(function(idx, option) {
+                    if ($.inArray(option.value, data.events) == -1) {
+                        $(this).remove();
+                    } else {
+                        currentOptions.push(option.value);
+                    }
+                });
+
+
+                data.events.forEach(function(event) {
+                    if ($.inArray(event, currentOptions) == -1) {
+                        option = new Option(event, event)
+                        $('.statsy__event_select').append(option);
+                    }
+                });
+
+
+                $('.statsy__event_select').css('display', 'block');
+                $('.statsy__event_select').select2();
+            } else {
+                $('.statsy__event_select').css('display', 'none');
+            }
+            drawStats(chart, 'Stats', data.stats, data.aggregation_period);
+        });
+    });
+
+    $('input[name="daterange"]').on('change', function() {
+        $('.statsy__group_select').trigger('change');
     })
 
 });
-
