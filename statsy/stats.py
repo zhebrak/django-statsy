@@ -72,47 +72,6 @@ class Stats(object):
 
         return aggregated_stats.items(), aggregation_period
 
-        # now = datetime.now()
-        #
-        # aggregated_periods = [
-        #     cls.get_aggregated_time(
-        #         '{0}:{1}:{2}'.format(day, minute / 60, minute % 60),
-        #         aggregation_period
-        #     )
-        #     for day in range(start.day, now.day + 1)
-        #     for minute in range(0, 60 * 24, aggregation_period)
-        # ]
-        #
-        # last_period = cls.get_aggregated_time(
-        #     '{0}:{1}:{2}'.format(now.day, now.hour, now.minute),
-        #     aggregation_period
-        # )
-        #
-        # for category, data in aggregated_stats.items():
-        #     consecutive_null_periods = []
-        #     for period in aggregated_periods:
-        #         if period >= last_period:
-        #             data[period] = None
-        #
-        #         elif period not in data:
-        #             consecutive_null_periods.append(period)
-        #             if len(consecutive_null_periods) == 10:
-        #                 for null_period in consecutive_null_periods:
-        #                     data[null_period] = None
-        #
-        #                 consecutive_null_periods = []
-        #
-        #             else:
-        #                 data[period] = 0
-        #
-        #         else:
-        #             consecutive_null_periods = []
-        #             data[period] /= float(aggregation_period) / average_by
-        #
-        #     aggregated_stats[category] = sorted(data.items())
-        #
-        # return aggregated_stats
-
     @classmethod
     def stats_numbers(cls, data, period):
         return cls.stats_average(data, 'float_value')

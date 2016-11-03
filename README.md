@@ -1,4 +1,3 @@
-
 Django Statsy
 ========
 
@@ -92,7 +91,7 @@ If you want to display collected statistics you will also have to add Statsy's U
 
 Default out of the box graphs.
 
-![group_overview](https://raw.github.com/fata1ex/django-statsy/master/docs/img/overview_group.png)
+![group_overview](https://raw.github.com/zhebrak/django-statsy/master/docs/img/dashboard.png)
 
 
 ### Configuration
@@ -172,12 +171,5 @@ statsy.site.register(
 )
 ```
 
-### Roadmap
-- Enhanced statistics view
-- More out of the box charts
-- Aggregation over time
-- User tracking
-- Realtime statistics
-
 ### License
-[MIT](https://github.com/fata1ex/django-statsy/raw/master/LICENSE)
+[MIT](https://github.com/zhebrak/django-statsy/raw/master/LICENSE)
