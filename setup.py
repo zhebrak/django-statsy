@@ -17,7 +17,8 @@ except (IOError, ImportError):
 
 install_requires = [
     'Django>=1.7',
-    'jsonfield>=1.0.0'
+    'jsonfield>=1.0.0',
+    'python-dateutil==2.5.3',
 ]
 
 setup(
