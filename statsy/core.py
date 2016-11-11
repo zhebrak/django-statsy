@@ -3,6 +3,7 @@
 import time
 
 from datetime import datetime
+from dateutil import parser
 from functools import wraps
 
 from django.contrib.contenttypes.models import ContentType
@@ -94,6 +95,8 @@ class Statsy(object):
 
         if 'created_at' not in kwargs:
             kwargs['created_at'] = datetime.now()
+        elif isinstance('created_at', str):
+            kwargs['created_at'] = parser.parse(kwargs['created_at'])
 
         try:
             callback = kwargs.get('callback')
