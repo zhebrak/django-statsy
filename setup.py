@@ -3,7 +3,7 @@
 from distutils.core import setup
 
 
-__version__ = '0.2'
+__version__ = '0.2.1'
 
 short_description = 'Statistics for Django projects'
 
