@@ -3,6 +3,7 @@
 import time
 
 from datetime import datetime
+from dateutil import parser
 from functools import wraps
 
 from django.contrib.contenttypes.models import ContentType
@@ -12,6 +13,7 @@ from statsy.exceptions import StatsyException, StatsyDisabled
 from statsy.helpers import get_correct_value_field
 from statsy.models import StatsyObject, StatsyGroup, StatsyEvent
 from statsy.settings import ASYNC
+from django.utils import timezone
 
 
 try:
@@ -93,7 +95,9 @@ class Statsy(object):
             return self._send(**kwargs)
 
         if 'created_at' not in kwargs:
-            kwargs['created_at'] = datetime.now()
+            kwargs['created_at'] = timezone.now()
+        elif isinstance('created_at', str):
+            kwargs['created_at'] = parser.parse(kwargs['created_at'])
 
         try:
             callback = kwargs.get('callback')
