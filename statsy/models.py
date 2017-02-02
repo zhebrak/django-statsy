@@ -130,7 +130,7 @@ class StatsyObject(models.Model):
         return new_object
 
     def serialize(self):
-        if isinstance(self.created_at, basestring):
+        if isinstance(self.created_at, str):
             self.created_at = datetime.strptime(self.created_at, '%Y-%m-%dT%H:%M:%S.%f')
 
         return {
