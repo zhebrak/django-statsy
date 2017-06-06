@@ -131,7 +131,10 @@ class StatsyObject(models.Model):
 
     def serialize(self):
         if isinstance(self.created_at, str):
-            self.created_at = datetime.strptime(self.created_at, '%Y-%m-%dT%H:%M:%S.%f')
+            self.created_at = datetime.strptime(
+                self.created_at if self.created_at[-1] != 'Z' else self.created_at[:-1],
+                '%Y-%m-%dT%H:%M:%S.%f'
+            )
 
         return {
             'id': self.pk,
