@@ -96,7 +96,7 @@ class Statsy(object):
 
         if 'created_at' not in kwargs:
             kwargs['created_at'] = timezone.now()
-        elif isinstance('created_at', str):
+        elif isinstance(kwargs['created_at'], str):
             kwargs['created_at'] = parser.parse(kwargs['created_at'])
 
         try:
