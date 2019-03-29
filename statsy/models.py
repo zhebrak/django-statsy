@@ -1,6 +1,7 @@
 # coding: utf-8
 
 from datetime import datetime
+from django.utils import timezone
 
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
@@ -121,7 +122,7 @@ class StatsyObject(models.Model):
         value = kwargs.pop('value', None)
 
         if 'created_at' not in kwargs:
-            kwargs['created_at'] = datetime.now()
+            kwargs['created_at'] = timezone.now()
 
         new_object = cls(**kwargs)
         new_object.value = value
